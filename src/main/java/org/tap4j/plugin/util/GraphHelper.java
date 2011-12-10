@@ -30,6 +30,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.tap4j.plugin.TapBuildAction;
 import org.tap4j.plugin.TapResult;
+import org.tap4j.plugin.AbstractTapProjectAction;
 
 /**
  * Helper class for trend graph generation. 
@@ -99,8 +100,7 @@ public class GraphHelper
 		@Override
 		public String generateURL(CategoryDataset dataset, int row, int column) {
 			NumberOnlyBuildLabel label = (NumberOnlyBuildLabel) dataset.getColumnKey(column);
-            //return  label.build.getNumber() + "/" + PluginImpl.URL + "/";
-			return  label.build.getNumber() + "/tap/";
+			return  label.build.getNumber() + "/" + AbstractTapProjectAction.URL_NAME + "/";
         }
 
           @Override
