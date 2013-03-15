@@ -84,7 +84,8 @@ public class TapTestResultResult extends TestResult {
 	 * @see hudson.model.ModelObject#getDisplayName()
 	 */
 	public String getDisplayName() {
-		return Integer.toString(tapTestResult.getTestNumber());
+		String name = tapTestResult.getDescription();
+		return name != null ? name : Integer.toString(tapTestResult.getTestNumber());
 	}
 
 	/* (non-Javadoc)
@@ -129,7 +130,8 @@ public class TapTestResultResult extends TestResult {
 	 */
 	@Override
 	public String getName() {
-		return testSetMap.getFileName() + "-" + tapTestResult.getTestNumber();
+		String name = tapTestResult.getDescription();
+		return testSetMap.getFileName() + "-" + name != null ? name : Integer.toString(tapTestResult.getTestNumber());
 	}
 	
 	public String getStatus() {
@@ -167,7 +169,7 @@ public class TapTestResultResult extends TestResult {
 	 */
 	@Override
 	public String getSafeName() {
-		return getName();
+		return testSetMap.getFileName() + "-" + tapTestResult.getTestNumber();
 	}
 	
 	/* (non-Javadoc)
