@@ -319,6 +319,30 @@ public class TapResult implements ModelObject, Serializable {
 		return getName();
 	}
 	
+	public void doGetContents(StaplerRequest request, StaplerResponse response) {
+		String f = request.getParameter("f");
+		try {
+			FilePath tapDir = new FilePath(new FilePath(new File(build.getRootDir(), Constants.TAP_DIR_NAME)), f);
+			ServletOutputStream sos = response.getOutputStream();
+			if(tapDir.exists()) {
+				String tapStream = tapDir.readToString();
+				response.setContentType("application/force-download");
+				response.setContentLength(tapStream.length());
+				response.setHeader("Content-Disposition","attachment; filename=\"" + tapDir.getName() + "\"");
+					
+				sos.println(tapStream);
+				sos.print('\n');
+			} else {
+				sos.println("Couldn't read FilePath.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+		}
+	}
+
 	public void doDownloadAttachment(StaplerRequest request, StaplerResponse response) {
 		String f = request.getParameter("f");
 		String key = request.getParameter("key");
