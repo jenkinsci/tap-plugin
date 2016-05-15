@@ -3,9 +3,11 @@
     xmlns:l="/lib/layout"
     xmlns:t="/lib/hudson"
 	xmlns:f="/lib/form"
-    xmlns:i="jelly:fmt">
+    xmlns:i="jelly:fmt"
+    xmlns:st="jelly:stapler" >
     <t:summary icon="/plugin/tap/icons/tap-48.png">
         <p><a href="tapResults">TAP Extended Test Results</a></p>
 		<p>This build contains ${it.result.testSets.size()} TAP test set(s), and <a href='${rootURL}/tapResults/#parseErrors'>${it.result.parseErrorTestSets.size()} parse error(s)</a>.</p>
-	</t:summary>
+        <st:include page="failuredisplay.jelly" it="${it.streamResult}"/>
+    </t:summary>
 </j:jelly>

@@ -29,6 +29,7 @@ import hudson.model.AbstractBuild;
 import java.io.Serializable;
 
 import org.kohsuke.stapler.StaplerProxy;
+import org.tap4j.plugin.model.TapStreamResult;
 
 /**
  * TAP Build action with TAP results.
@@ -123,6 +124,13 @@ public class TapBuildAction implements Action, Serializable, StaplerProxy {
         }
 
         return previousAction;
+    }
+    
+    public TapStreamResult getStreamResult()
+    {
+        TapTestResultAction action = build.getAction(TapTestResultAction.class);
+        TapStreamResult result = (TapStreamResult) action.getResult();
+        return result;
     }
 
 }
