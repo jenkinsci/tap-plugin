@@ -34,11 +34,22 @@ import hudson.tasks.test.TestResultProjectAction;
  * @since 1.0
  */
 public class AbstractTapProjectAction extends TestResultProjectAction implements Action {
+    protected AbstractProject<?, ?> project;
 
+    
     public AbstractTapProjectAction(AbstractProject<?, ?> project) {
         super(project); 
+        this.project = project;
     }
 
+    public AbstractProject<?, ?> getProject() {
+        return this.project;
+    }
+
+    protected Class<TapBuildAction> getBuildActionClass() {
+        return TapBuildAction.class;
+    }
+    
     public static final String URL_NAME = "tapResults";
     public static final String ICON_NAME = "/plugin/tap/icons/tap-24.png";
     

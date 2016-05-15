@@ -28,6 +28,7 @@ import hudson.model.AbstractProject;
 import hudson.model.Run;
 import hudson.model.Job;
 import hudson.matrix.MatrixProject;
+import hudson.matrix.MatrixConfiguration;
 import hudson.util.ChartUtil;
 import hudson.util.DataSetBuilder;
 import hudson.util.RunList;
@@ -51,8 +52,6 @@ import org.tap4j.plugin.util.GraphHelper;
  */
 public class TapProjectAction extends AbstractTapProjectAction {
 
-    private AbstractProject<?, ?> project;
-    
     protected class Result {
         public int numPassed;
         public int numFailed;
@@ -83,13 +82,6 @@ public class TapProjectAction extends AbstractTapProjectAction {
         this.project = project;
     }
 
-    public AbstractProject<?, ?> getProject() {
-        return this.project;
-    }
-
-    protected Class<TapBuildAction> getBuildActionClass() {
-        return TapBuildAction.class;
-    }
 
     public TapBuildAction getLastBuildAction() {
         TapBuildAction action = null;
@@ -180,7 +172,6 @@ public class TapProjectAction extends AbstractTapProjectAction {
             if( p instanceof MatrixProject )
             {
                 MatrixProject mp = (MatrixProject) p;
- 
                 for (Job j : mp.getAllJobs()) {
                    if (j != mp) { //getAllJobs includes the parent job too, so skip that
                        Run<?,?> sub = j.getBuild(build.getId());
