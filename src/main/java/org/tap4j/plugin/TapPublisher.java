@@ -47,6 +47,7 @@ import hudson.Util;
 import hudson.matrix.MatrixAggregatable;
 import hudson.matrix.MatrixAggregator;
 import hudson.matrix.MatrixBuild;
+import hudson.matrix.MatrixRun;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
@@ -80,6 +81,7 @@ public class TapPublisher extends Recorder implements MatrixAggregatable {
     private final Boolean verbose;
     private final Boolean showOnlyFailures;
     private final Integer maxBuildsToShow;
+    private final Boolean displayFailuresOnMainPage;
 
     @Deprecated
     public TapPublisher(String testResults,
@@ -96,7 +98,7 @@ public class TapPublisher extends Recorder implements MatrixAggregatable {
         this(testResults, failIfNoResults, failedTestsMarkBuildAsFailure, 
                 outputTapToConsole, enableSubtests, discardOldReports, todoIsFailure,
                 includeCommentDiagnostics, validateNumberOfTests, planRequired, verbose,
-                Boolean.FALSE, 10);
+                Boolean.FALSE, 10, false);
     }
     
     @DataBoundConstructor
@@ -112,7 +114,8 @@ public class TapPublisher extends Recorder implements MatrixAggregatable {
             Boolean planRequired,
             Boolean verbose,
             Boolean showOnlyFailures,
-            Integer maxBuildsToShow) {
+            Integer maxBuildsToShow,
+            Boolean displayFailuresOnMainPage) {
         this.testResults = testResults;
         this.failIfNoResults = BooleanUtils.toBooleanDefaultIfNull(failIfNoResults, false);
         this.failedTestsMarkBuildAsFailure = BooleanUtils.toBooleanDefaultIfNull(failedTestsMarkBuildAsFailure, false);
@@ -126,6 +129,7 @@ public class TapPublisher extends Recorder implements MatrixAggregatable {
         this.verbose = BooleanUtils.toBooleanDefaultIfNull(verbose, true);
         this.showOnlyFailures = BooleanUtils.toBooleanDefaultIfNull(showOnlyFailures, false);
         this.maxBuildsToShow = (Integer)ObjectUtils.defaultIfNull(maxBuildsToShow, 10);
+        this.displayFailuresOnMainPage = BooleanUtils.toBooleanDefaultIfNull(displayFailuresOnMainPage, false);
     }
 
     public Object readResolve() {
@@ -142,7 +146,8 @@ public class TapPublisher extends Recorder implements MatrixAggregatable {
         Boolean verbose = BooleanUtils.toBooleanDefaultIfNull(this.getVerbose(), true);
         Boolean showOnlyFailures = BooleanUtils.toBooleanDefaultIfNull(this.getShowOnlyFailures(), false);
         Integer maxBuildsToShow = (Integer)ObjectUtils.defaultIfNull(this.maxBuildsToShow, 10);
-        return new TapPublisher(testResults, failIfNoResults, failedTestsMarkBuildAsFailure, outputTapToConsole, enableSubtests, discardOldReports, todoIsFailure, includeCommentDiagnostics, validateNumberOfTests, planRequired, verbose, showOnlyFailures, maxBuildsToShow);
+        Boolean displayFailuresOnMainPage = BooleanUtils.toBooleanDefaultIfNull(this.displayFailuresOnMainPage, false);
+        return new TapPublisher(testResults, failIfNoResults, failedTestsMarkBuildAsFailure, outputTapToConsole, enableSubtests, discardOldReports, todoIsFailure, includeCommentDiagnostics, validateNumberOfTests, planRequired, verbose, showOnlyFailures, maxBuildsToShow, displayFailuresOnMainPage);
     }
 
     public Boolean getShowOnlyFailures() {
@@ -241,7 +246,7 @@ public class TapPublisher extends Recorder implements MatrixAggregatable {
     @Override
     public Collection<? extends Action> getProjectActions(AbstractProject<?, ?> project) {
         List<Action> actions = Lists.newArrayList();
-        actions.add(new TapProjectAction(project));
+        actions.add(new TapProjectAction(project, this.displayFailuresOnMainPage));
         actions.add(new TapBuildHistoryAction(project, this.maxBuildsToShow));
         
         return actions;

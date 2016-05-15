@@ -25,8 +25,12 @@ package org.tap4j.plugin;
 
 import hudson.model.Action;
 import hudson.model.AbstractBuild;
+import hudson.matrix.MatrixBuild;
+import hudson.matrix.MatrixRun;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.kohsuke.stapler.StaplerProxy;
 import org.tap4j.plugin.model.TapStreamResult;
@@ -90,6 +94,24 @@ public class TapBuildAction implements Action, Serializable, StaplerProxy {
         return URL_NAME;
     }
 
+    public List<TapBuildAction> getChildren()
+    {
+        if(this.build instanceof MatrixBuild)
+        {
+            List<TapBuildAction> actions = new ArrayList();
+            
+            MatrixBuild b = (MatrixBuild)this.build;
+            for(MatrixRun run : b.getRuns())
+            {
+                actions.add(run.getAction(TapBuildAction.class));
+            }
+            return actions;
+        }
+        else
+        {
+            return null;
+        }
+    }
     /**
      * @return the build
      */
@@ -132,5 +154,4 @@ public class TapBuildAction implements Action, Serializable, StaplerProxy {
         TapStreamResult result = (TapStreamResult) action.getResult();
         return result;
     }
-
 }

@@ -5,5 +5,11 @@
       </div>
       <j:set var="relativeUrlPath" value="${from.urlName}/"/>
       <img src="${relativeUrlPath}graph" lazymap="${relativeUrlPath}graphMap" alt="[Test result trend chart]"/>
-   </j:if>
+    </j:if>
+    <j:if test="${from.displayFailuresOnMainPage}">
+        <st:include page="failuredisplay.jelly" it="${from}"/>
+        <j:forEach var="config" items="${from.children}">
+            <st:include page="failuredisplay" it="${config}"/>
+        </j:forEach>
+    </j:if>
 </j:jelly>

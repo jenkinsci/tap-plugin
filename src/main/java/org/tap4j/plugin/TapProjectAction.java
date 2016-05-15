@@ -29,6 +29,7 @@ import hudson.model.Run;
 import hudson.model.Job;
 import hudson.matrix.MatrixProject;
 import hudson.matrix.MatrixConfiguration;
+import hudson.tasks.test.TestResult;
 import hudson.util.ChartUtil;
 import hudson.util.DataSetBuilder;
 import hudson.util.RunList;
@@ -37,12 +38,15 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 import org.jfree.chart.JFreeChart;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.tap4j.plugin.util.GraphHelper;
+import org.tap4j.plugin.model.TestSetMap;
 
 /**
  * A TAP Project action, with a graph and a list of builds.
@@ -76,12 +80,18 @@ public class TapProjectAction extends AbstractTapProjectAction {
      * number of builds for the project.
      */
     private transient Map<String, Integer> requestMap = new HashMap<String, Integer>();
+    private final Boolean displayFailuresOnMainPage;
 
-    public TapProjectAction(AbstractProject<?, ?> project) {
+    public TapProjectAction(AbstractProject<?, ?> project, 
+                            Boolean displayFailuresOnMainPage) {
         super(project);
         this.project = project;
+        this.displayFailuresOnMainPage = displayFailuresOnMainPage;
     }
 
+    public Boolean getDisplayFailuresOnMainPage() {
+        return this.displayFailuresOnMainPage;
+    }
 
     public TapBuildAction getLastBuildAction() {
         TapBuildAction action = null;
@@ -305,4 +315,25 @@ public class TapProjectAction extends AbstractTapProjectAction {
         return 200;
     }
 
+    public List<TestResult> getFailedTests() {
+        if(this.getLastBuildAction() != null)
+        {
+            return this.getLastBuildAction().getStreamResult().getFailedTests2();
+        }
+        return null;
+    }
+
+    public List<TapProjectAction> getChildren() {
+        if(getProject() instanceof MatrixProject)
+        {
+            List<TapProjectAction> list = new ArrayList();
+            for(MatrixConfiguration c : ((MatrixProject)getProject()).getActiveConfigurations())
+            {
+                list.add(c.getAction(TapProjectAction.class));
+            }
+            return list;
+        }
+        else
+            return null;
+    }
 }
