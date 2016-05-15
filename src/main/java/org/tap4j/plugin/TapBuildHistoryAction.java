@@ -38,13 +38,22 @@ import java.util.ArrayList;
  *
  * @author evandy
  */
-public class TapBuildHistoryAction extends AbstractTapProjectAction implements ProminentProjectAction {
+public class TapBuildHistoryAction implements ProminentProjectAction {
 
     private final Integer maxBuildsToShow;
+    private final AbstractProject<?, ?> project;
     
     public TapBuildHistoryAction(AbstractProject<?, ?> project, Integer maxBuildsToShow) {
-        super(project);
+        this.project = project;
         this.maxBuildsToShow = maxBuildsToShow;
+    }
+    
+    public AbstractProject<?, ?> getProject() {
+        return this.project;
+    }
+
+    protected Class<TapBuildAction> getBuildActionClass() {
+        return TapBuildAction.class;
     }
 
     @Override
