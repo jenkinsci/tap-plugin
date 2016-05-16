@@ -223,6 +223,9 @@ public class TapPublisher extends Recorder implements MatrixAggregatable {
         return verbose;
     }
 
+    public Boolean getDisplayFailuresOnMainPage() {
+        return displayFailuresOnMainPage;
+    }
     /**
      * Gets the directory where the plug-in saves its TAP streams before processing them and
      * displaying in the UI.
