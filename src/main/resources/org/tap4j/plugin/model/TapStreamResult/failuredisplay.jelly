@@ -30,6 +30,8 @@ THE SOFTWARE.
     <table class="pane sortable">
       <tr>
         <td class="pane-header">${%Test Name}</td>
+        <td class="pane-header" style="width:4em">${%Skip}</td>
+        <td class="pane-header" style="width:4em">${%Todo}</td>
         <td class="pane-header" style="width:4em">${%Duration}</td>
         <td class="pane-header" style="width:3em">${%Age}</td>
       </tr>
@@ -51,6 +53,14 @@ THE SOFTWARE.
             </div>
           </td>
           
+          <td class="pane" stile="text-align:right;" data="${f.skip}">
+              ${f.skip}
+          </td>
+
+          <td class="pane" stile="text-align:right;" data="${f.todo}">
+              ${f.todo}
+          </td>
+
           <td class="pane" style="text-align:right;" data="${f.duration}">
             ${f.durationString}
           </td>

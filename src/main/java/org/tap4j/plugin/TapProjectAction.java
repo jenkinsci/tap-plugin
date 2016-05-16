@@ -46,7 +46,7 @@ import org.jfree.chart.JFreeChart;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.tap4j.plugin.util.GraphHelper;
-import org.tap4j.plugin.model.TestSetMap;
+import org.tap4j.plugin.model.TapTestResultResult;
 
 /**
  * A TAP Project action, with a graph and a list of builds.
@@ -319,6 +319,7 @@ public class TapProjectAction extends AbstractTapProjectAction {
         if(this.getLastBuildAction() != null)
         {
             return this.getLastBuildAction().getStreamResult().getFailedTests2();
+            
         }
         return null;
     }
