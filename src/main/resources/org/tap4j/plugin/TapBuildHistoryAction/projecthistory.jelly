@@ -44,21 +44,24 @@ THE SOFTWARE.
                     <j:forEach var="build" items="${builds}">
                         <j:set var="state" value="${it.getBuildStatus(set, test, build)}"/>
                         <j:set var="color" value="#FFFFFF" />
-                        <j:if test="${state.equals('OK')}">
+                        <j:set var="txt" value="${state.status}"/>
+                        <j:if test="${state.getStatus().equals('OK')}">
                             <j:set var="color" value="#729FCF" />
                         </j:if>
-                        <j:if test="${state.equals('NOT OK')}">
+                        <j:if test="${state.getStatus().equals('NOT OK')}">
                             <j:set var="color" value="#EF2929" />
                         </j:if>
-                        <j:if test="${state.equals('SKIP')}">
+                        <j:if test="${state.directive.equals('SKIP')}">
                             <j:set var="color" value="#FCE94F" />
+                            <j:set var="txt" value="SKIP"/>
                         </j:if>
-                        <j:if test="${state.equals('TODO')}">
-                            <j:set var="color" value="#FCE94F" />
+                        <j:if test="${state.directive.equals('TODO')}">
+                            <!-- Maintain color for real status; but show TODO -->
+                            <j:set var="txt" value="TODO" />
                         </j:if>
                         <td class="pane" style="text-align:right" bgcolor="${color}">
                             <span style="font-weight: bold">
-                                <a href="../${build.number}">${state}</a></span>
+                                <a href="../${build.number}">${txt}</a></span>
                         </td>
             
                     </j:forEach>

@@ -40,6 +40,21 @@ import java.util.ArrayList;
  */
 public class TapBuildHistoryAction implements ProminentProjectAction {
 
+    public class HistoryResult
+    {
+        private final String status;
+        private final String directive;
+        
+        public HistoryResult(String status, String directive)
+        {
+            this.status = status;
+            this.directive = directive;
+        }
+        
+        public String getStatus() { return this.status; }
+        public String getDirective() { return this.directive; }
+    }
+    
     private final Integer maxBuildsToShow;
     private final AbstractProject<?, ?> project;
     
@@ -146,16 +161,16 @@ public class TapBuildHistoryAction implements ProminentProjectAction {
         return action.getResult().getTestSets();
     }
     
-    public String getBuildStatus(TestSetMap set, TestResult result, Run<?,?> b)
+    public HistoryResult getBuildStatus(TestSetMap set, TestResult result, Run<?,?> b)
     {
         // If a sub to a matrix project, given the parent's build, so grab the
         // right one.
-        Run<?,?> build = getProject().getBuild(b.getId());
+        Run<?,?> build = getProject().getBuildByNumber(b.getNumber());
         TapBuildAction action = build != null ? build.getAction(getBuildActionClass()) : null;
         if(action == null)
         {
             // No TAP results for this build
-            return "";
+            return new HistoryResult("","");
         }
 
         for(TestSetMap map : action.getResult().getTestSets())
@@ -166,28 +181,15 @@ public class TapBuildHistoryAction implements ProminentProjectAction {
                 {
                     if(r.getDescription().equals(result.getDescription()))
                     {
-                        if(r.getDirective() == null )
-                        {
-                            return r.getStatus().toString().toUpperCase();
-                        }
-                        else if(r.getDirective().getDirectiveValue() == DirectiveValues.SKIP)
-                        {
-                            return "SKIP";
-                        }
-                        else if (r.getDirective().getDirectiveValue() == DirectiveValues.TODO)
-                        {
-                            return "TODO";
-                        }
-                        else
-                        {
-                            return r.getStatus().toString().toUpperCase();
-                        }
+                        org.tap4j.model.Directive d = r.getDirective();
+                        return new HistoryResult(r.getStatus().toString().toUpperCase(),
+                                                 d==null?"":d.getDirectiveValue().toString().toUpperCase());
                     }
                 }
-                return "";
+                return new HistoryResult("","");
                 //break; // Not found; don't keep looking
             }
         }
-        return "";
+        return new HistoryResult("","");
     }
 }
