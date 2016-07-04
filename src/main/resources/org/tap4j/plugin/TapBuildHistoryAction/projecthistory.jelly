@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+The MIT License
+
+Copyright 2016 Jenkins.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
+
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <h1><st:out value="${it.title}" /></h1>
+    <j:forEach var="set" items="${it.testSets}">
+        <j:set var="builds" value="${it.builds}"/>
+        <h2>
+            <st:out value="${set.fileName}"/>
+        </h2>
+        <table class="pane sortable" id="testhistory">
+          <tr>
+            <td class="pane-header">Test</td>  
+            <j:forEach var="build" items="${builds}">
+              <td class="pane-header" style="width:5em"><st:out value="${build.id}"/></td>
+            </j:forEach>
+          </tr>
+          <j:forEach var="test" items="${set.testSet.testResults}">
+              <tr>
+                    <td>${test.testNumber} - ${test.description}</td>
+                    <j:forEach var="build" items="${builds}">
+                        <j:set var="state" value="${it.getBuildStatus(set, test, build)}"/>
+                        <j:set var="color" value="#FFFFFF" />
+                        <j:set var="txt" value="${state.status}"/>
+                        <j:if test="${state.getStatus().equals('OK')}">
+                            <j:set var="color" value="#729FCF" />
+                        </j:if>
+                        <j:if test="${state.getStatus().equals('NOT OK')}">
+                            <j:set var="color" value="#EF2929" />
+                        </j:if>
+                        <j:if test="${state.directive.equals('SKIP')}">
+                            <j:set var="color" value="#FCE94F" />
+                            <j:set var="txt" value="SKIP"/>
+                        </j:if>
+                        <j:if test="${state.directive.equals('TODO')}">
+                            <!-- Maintain color for real status; but show TODO -->
+                            <j:set var="txt" value="TODO" />
+                        </j:if>
+                        <td class="pane" style="text-align:right" bgcolor="${color}">
+                            <span style="font-weight: bold">
+                                <a href="../${build.number}">${txt}</a></span>
+                        </td>
+            
+                    </j:forEach>
+              </tr>
+          </j:forEach>
+        </table>
+    </j:forEach>
+</j:jelly>

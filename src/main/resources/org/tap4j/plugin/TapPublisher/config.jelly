@@ -37,5 +37,11 @@
       <f:entry title="Show only failures">
           <f:checkbox name="TapPublisher.showOnlyFailures" value="${instance.showOnlyFailures}" checked="${instance.showOnlyFailures}" default="false" />
       </f:entry>
+      <f:entry title="Max builds to show in history">
+          <f:textbox name="TapPublisher.maxBuildsToShow" field="maxBuildsToShow" default="10"/>
+      </f:entry>
+      <f:entry title="Display failures on main page">
+          <f:checkbox name="TapPublisher.displayFailuresOnMainPage" value="${instance.displayFailuresOnMainPage}" checked="${instance.displayFailuresOnMainPage}"/>
+      </f:entry>
   </f:advanced>
 </j:jelly>

@@ -23,6 +23,7 @@
  */
 package org.tap4j.plugin;
 
+import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -31,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.tap4j.model.Plan;
 import org.tap4j.model.TestSet;
@@ -45,6 +47,7 @@ import hudson.Util;
 import hudson.matrix.MatrixAggregatable;
 import hudson.matrix.MatrixAggregator;
 import hudson.matrix.MatrixBuild;
+import hudson.matrix.MatrixRun;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
@@ -55,6 +58,7 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.tasks.test.TestResultAggregator;
+import java.util.Collection;
 
 /**
  * Publishes TAP results in Jenkins builds.
@@ -76,6 +80,8 @@ public class TapPublisher extends Recorder implements MatrixAggregatable {
     private final Boolean planRequired;
     private final Boolean verbose;
     private final Boolean showOnlyFailures;
+    private final Integer maxBuildsToShow;
+    private final Boolean displayFailuresOnMainPage;
 
     @Deprecated
     public TapPublisher(String testResults,
@@ -92,7 +98,7 @@ public class TapPublisher extends Recorder implements MatrixAggregatable {
         this(testResults, failIfNoResults, failedTestsMarkBuildAsFailure, 
                 outputTapToConsole, enableSubtests, discardOldReports, todoIsFailure,
                 includeCommentDiagnostics, validateNumberOfTests, planRequired, verbose,
-                Boolean.FALSE);
+                Boolean.FALSE, 10, false);
     }
     
     @DataBoundConstructor
@@ -107,7 +113,9 @@ public class TapPublisher extends Recorder implements MatrixAggregatable {
             Boolean validateNumberOfTests,
             Boolean planRequired,
             Boolean verbose,
-            Boolean showOnlyFailures) {
+            Boolean showOnlyFailures,
+            Integer maxBuildsToShow,
+            Boolean displayFailuresOnMainPage) {
         this.testResults = testResults;
         this.failIfNoResults = BooleanUtils.toBooleanDefaultIfNull(failIfNoResults, false);
         this.failedTestsMarkBuildAsFailure = BooleanUtils.toBooleanDefaultIfNull(failedTestsMarkBuildAsFailure, false);
@@ -120,6 +128,8 @@ public class TapPublisher extends Recorder implements MatrixAggregatable {
         this.planRequired = BooleanUtils.toBooleanDefaultIfNull(planRequired, true); // true is the old behaviour
         this.verbose = BooleanUtils.toBooleanDefaultIfNull(verbose, true);
         this.showOnlyFailures = BooleanUtils.toBooleanDefaultIfNull(showOnlyFailures, false);
+        this.maxBuildsToShow = (Integer)ObjectUtils.defaultIfNull(maxBuildsToShow, 10);
+        this.displayFailuresOnMainPage = BooleanUtils.toBooleanDefaultIfNull(displayFailuresOnMainPage, false);
     }
 
     public Object readResolve() {
@@ -135,11 +145,17 @@ public class TapPublisher extends Recorder implements MatrixAggregatable {
         Boolean planRequired = BooleanUtils.toBooleanDefaultIfNull(this.getPlanRequired(), true);
         Boolean verbose = BooleanUtils.toBooleanDefaultIfNull(this.getVerbose(), true);
         Boolean showOnlyFailures = BooleanUtils.toBooleanDefaultIfNull(this.getShowOnlyFailures(), false);
-        return new TapPublisher(testResults, failIfNoResults, failedTestsMarkBuildAsFailure, outputTapToConsole, enableSubtests, discardOldReports, todoIsFailure, includeCommentDiagnostics, validateNumberOfTests, planRequired, verbose, showOnlyFailures);
+        Integer maxBuildsToShow = (Integer)ObjectUtils.defaultIfNull(this.maxBuildsToShow, 10);
+        Boolean displayFailuresOnMainPage = BooleanUtils.toBooleanDefaultIfNull(this.displayFailuresOnMainPage, false);
+        return new TapPublisher(testResults, failIfNoResults, failedTestsMarkBuildAsFailure, outputTapToConsole, enableSubtests, discardOldReports, todoIsFailure, includeCommentDiagnostics, validateNumberOfTests, planRequired, verbose, showOnlyFailures, maxBuildsToShow, displayFailuresOnMainPage);
     }
 
     public Boolean getShowOnlyFailures() {
         return this.showOnlyFailures;
+    }
+    
+    public Integer getMaxBuildsToShow() {
+        return this.maxBuildsToShow;
     }
 
     /**
@@ -207,6 +223,9 @@ public class TapPublisher extends Recorder implements MatrixAggregatable {
         return verbose;
     }
 
+    public Boolean getDisplayFailuresOnMainPage() {
+        return displayFailuresOnMainPage;
+    }
     /**
      * Gets the directory where the plug-in saves its TAP streams before processing them and
      * displaying in the UI.
@@ -224,14 +243,17 @@ public class TapPublisher extends Recorder implements MatrixAggregatable {
      * (non-Javadoc)
      * 
      * @see
-     * hudson.tasks.BuildStepCompatibilityLayer#getProjectAction(hudson.model
+     * hudson.tasks.BuildStepCompatibilityLayer#getProjectActions(hudson.model
      * .AbstractProject)
      */
     @Override
-    public Action getProjectAction(AbstractProject<?, ?> project) {
-        return new TapProjectAction(project);
+    public Collection<? extends Action> getProjectActions(AbstractProject<?, ?> project) {
+        List<Action> actions = Lists.newArrayList();
+        actions.add(new TapProjectAction(project, this.displayFailuresOnMainPage));
+        actions.add(new TapBuildHistoryAction(project, this.maxBuildsToShow));
+        
+        return actions;
     }
-
     /*
      * (non-Javadoc)
      * 
