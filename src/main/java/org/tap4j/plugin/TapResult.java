@@ -296,7 +296,7 @@ public class TapResult implements ModelObject, Serializable {
     }
     
     public String escapeHTML(String html) {
-        return StringUtils.replaceEach(html, new String[]{"&", "\"", "<", ">"}, new String[]{"&amp;", "&quot;", "&lt;", "&gt;"});
+        return org.apache.commons.lang.StringEscapeUtils.escapeHtml(html);
     }
 
     /**
