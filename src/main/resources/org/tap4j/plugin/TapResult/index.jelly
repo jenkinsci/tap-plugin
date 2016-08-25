@@ -24,15 +24,19 @@
 				            <td width='5%'>${it.testSets.size()} files</td>
 				            <td>${it.getTotal()} tests, ${it.passed} ok, ${it.failed} not ok, ${it.skipped} skipped, ${it.bailOuts} Bail Out!</td>
 				        </tr>
-				    </table>				
+				    </table>
+				    
+				    <j:if test="${it.showOnlyFailures}">
+				    	<p><strong>Note:</strong> Displaying only failures</p>
+				    </j:if>
 
 					<j:forEach var="map" items="${it.testSets}">
 					   <j:choose>
 					     <j:when test="${map.getTestSet().getPlan().isSkip()}">
-						   <p>File: <span class="underline"><a href='contents?f=${map.fileName}'>${map.fileName}</a></span> (Skipped)</p>
+						   <p>File: <span class="underline"><a href='${rootURL}/${it.owner.url}artifact/${map.fileName}/*view*/'>${map.fileName}</a></span> (Skipped)</p>
 						 </j:when>
 						 <j:otherwise>
-					       <p>File: <span class="underline"><a href='/${it.owner.project.url}ws/${map.fileName}/*view*/'>${map.fileName}</a></span></p>
+					       <p>File: <span class="underline"><a href='${rootURL}/${it.owner.url}artifact/${map.fileName}/*view*/'>${map.fileName}</a></span></p>
 						 </j:otherwise>
 					   </j:choose>
 						 <table class="tap" width="100%">
@@ -43,10 +47,8 @@
 								<th>Directive</th>
 							</tr>
 							<j:forEach var="tapLine" items="${map.testSet.tapLines}">
-								
 								<!-- TAP Test Result information -->
-								<tap:line tapLine="${tapLine}" tapFile="${map.fileName}" />
-								
+								<tap:line tapLine="${tapLine}" tapFile="${map.fileName}" showOnlyFailures="${it.showOnlyFailures}" />
 							</j:forEach>
 						</table>
 						<br />
@@ -67,10 +69,10 @@
                             <th>File name</th>
                             <th>Cause</th>
                         </tr>
-                        <j:forEach var="testSet" items="${it.parseErrorTestSets}">
+                        <j:forEach var="map" items="${it.parseErrorTestSets}">
                         <tr>
-                            <td><a href='contents?f=${testSet.fileName}'>${testSet.fileName}</a></td>
-                            <td>${testSet.cause}</td>
+                            <td><a href='${rootURL}/${it.owner.url}artifact/${map.fileName}/*view*/'>${map.fileName}</a></td>
+                            <td>${map.cause}</td>
                         </tr>
                         </j:forEach>
                      </table>

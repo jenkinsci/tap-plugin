@@ -6,6 +6,6 @@
     xmlns:i="jelly:fmt">
     <t:summary icon="/plugin/tap/icons/tap-48.png">
         <p><a href="tapResults">TAP Extended Test Results</a></p>
-		<p>This build contains ${it.result.testSets.size()} TAP test set(s), and <a href='tapResults/#parseErrors'>${it.result.parseErrorTestSets.size()} parse error(s)</a>.</p>
+		<p>This build contains ${it.result.testSets.size()} TAP test set(s), and <a href='${rootURL}/tapResults/#parseErrors'>${it.result.parseErrorTestSets.size()} parse error(s)</a>.</p>
 	</t:summary>
 </j:jelly>

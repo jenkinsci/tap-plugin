@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) <2011> <Bruno P. Kinoshita>
+ * Copyright (c) 2011 Bruno P. Kinoshita
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,25 +37,25 @@ import org.tap4j.model.TestSet;
  */
 public class TestSetMap implements Serializable {
 
-	private static final long serialVersionUID = 7300386936718557088L;
-	
-	private final String fileName;
-	private final TestSet testSet;
-	
-	public TestSetMap( String fileName, TestSet testSet )
-	{
-		this.fileName = fileName;
-		this.testSet = testSet;
-	}
-	
-	public String getFileName()
-	{
-		return this.fileName;
-	}
-	
-	public TestSet getTestSet()
-	{
-		return this.testSet;
-	}
-	
+    private static final long serialVersionUID = 7300386936718557088L;
+    
+    private final String fileName;
+    private final TestSet testSet;
+    
+    public TestSetMap( String fileName, TestSet testSet )
+    {
+        this.fileName = fileName;
+        this.testSet = testSet;
+    }
+    
+    public String getFileName()
+    {
+        return this.fileName;
+    }
+    
+    public TestSet getTestSet()
+    {
+        return this.testSet;
+    }
+    
 }

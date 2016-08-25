@@ -3,6 +3,9 @@
   <f:entry title="Test results" field="testResults">
     <f:textbox />
   </f:entry>
+  <f:entry title="Verbose (if checked will print a message for each TAP stream file)">
+      <f:checkbox name="TapPublisher.verbose" value="${instance.verbose}" checked="${instance.verbose}" default="true" />
+  </f:entry>
   <f:advanced>
       <f:entry title="Fail the build if no test results are present">
           <f:checkbox name="TapPublisher.failIfNoResults" value="${instance.failIfNoResults}" checked="${instance.failIfNoResults}" />
@@ -30,6 +33,15 @@
       </f:entry>
       <f:entry title="Is TAP plan required?">
           <f:checkbox name="TapPublisher.planRequired" value="${instance.planRequired}" checked="${instance.planRequired}" default="true" />
+      </f:entry>
+      <f:entry title="Show only failures">
+          <f:checkbox name="TapPublisher.showOnlyFailures" value="${instance.showOnlyFailures}" checked="${instance.showOnlyFailures}" default="false" />
+      </f:entry>
+      <f:entry title="Strip single parents">
+          <f:checkbox name="TapPublisher.stripSingleParents" value="${instance.stripSingleParents}" checked="${instance.stripSingleParents}" default="false" />
+      </f:entry>
+      <f:entry title="Flatten TAP result">
+          <f:checkbox name="TapPublisher.flattenTapResult" value="${instance.flattenTapResult}" checked="${instance.flattenTapResult}" default="false" />
       </f:entry>
   </f:advanced>
 </j:jelly>

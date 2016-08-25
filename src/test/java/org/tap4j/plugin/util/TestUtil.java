@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) <2013> <Bruno P. Kinoshita>
+ * Copyright (c) 2013 Bruno P. Kinoshita
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,20 +34,20 @@ import org.junit.Test;
  */
 public class TestUtil {
 
-	private static final String UNIX_WS = "/home/workspace";
-	private static final String UNIX_FOLDER_1 = "/home/workspace/test/subdirectory/another/1.txt";
-	private static final String UNIX_FOLDER_2 = "/home/anotherfolder/test.txt";
-	
-	private static final String WIN_WS = "c:\\home\\workspace";
-	private static final String WIN_FOLDER_1 = "c:\\home\\workspace\\test\\subdirectory\\another\\1.txt";
-	private static final String WIN_FOLDER_2 = "c:\\home\\anotherfolder\\test.txt";
-	
-	@Test
-	public void testNormalizeFolders() {
-		assertEquals("Wrong normalization", "test/subdirectory/another/1.txt", Util.normalizeFolders(UNIX_WS, UNIX_FOLDER_1));
-		assertEquals("Wrong normalization", "/home/anotherfolder/test.txt", Util.normalizeFolders(UNIX_WS, UNIX_FOLDER_2));
-		assertEquals("Wrong normalization", "test/subdirectory/another/1.txt", Util.normalizeFolders(WIN_WS, WIN_FOLDER_1));
-		assertEquals("Wrong normalization", "c:/home/anotherfolder/test.txt", Util.normalizeFolders(WIN_WS, WIN_FOLDER_2));
-	}
-	
+    private static final String UNIX_WS = "/home/workspace";
+    private static final String UNIX_FOLDER_1 = "/home/workspace/test/subdirectory/another/1.txt";
+    private static final String UNIX_FOLDER_2 = "/home/anotherfolder/test.txt";
+    
+    private static final String WIN_WS = "c:\\home\\workspace";
+    private static final String WIN_FOLDER_1 = "c:\\home\\workspace\\test\\subdirectory\\another\\1.txt";
+    private static final String WIN_FOLDER_2 = "c:\\home\\anotherfolder\\test.txt";
+    
+    @Test
+    public void testNormalizeFolders() {
+        assertEquals("Wrong normalization", "test/subdirectory/another/1.txt", Util.normalizeFolders(UNIX_WS, UNIX_FOLDER_1));
+        assertEquals("Wrong normalization", "/home/anotherfolder/test.txt", Util.normalizeFolders(UNIX_WS, UNIX_FOLDER_2));
+        assertEquals("Wrong normalization", "test/subdirectory/another/1.txt", Util.normalizeFolders(WIN_WS, WIN_FOLDER_1));
+        assertEquals("Wrong normalization", "c:/home/anotherfolder/test.txt", Util.normalizeFolders(WIN_WS, WIN_FOLDER_2));
+    }
+    
 }

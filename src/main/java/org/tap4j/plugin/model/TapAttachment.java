@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) <2012> <Bruno P. Kinoshita>
+ * Copyright (c) 2012 Bruno P. Kinoshita
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,84 +32,84 @@ import java.util.Map;
  */
 public class TapAttachment {
 
-	private final String fileName;
-	private final byte[] content;
-	private final int size;
-	private final String fileType;
+    private final String fileName;
+    private final byte[] content;
+    private final int size;
+    private final String fileType;
 
-	/**
-	 * @param fileName
-	 * @param content
-	 * @param size
-	 * @param fileType
-	 */
-	public TapAttachment(String fileName, byte[] content, int size,
-			String fileType) {
-		super();
-		this.fileName = fileName;
-		this.content = content;
-		this.size = size;
-		this.fileType = fileType;
-	}
-	
-	/**
-	 * @param fileName
-	 * @param content
-	 * @param size
-	 * @param fileType
-	 */
-	public TapAttachment(byte[] content, Map<String, Object> diagnostics) {
-		super();
-		this.content = content;
-		int size = -1;
-		String fileType = "";
-		String fileName = "tapAttachment";
-		for(String key : diagnostics.keySet()) {
-			if(diagnostics.get(key) instanceof Map<?, ?> == Boolean.FALSE) {
-				if(key.equalsIgnoreCase("file-size")) {
-					try {
-						size = (int) Long.parseLong(diagnostics.get(key).toString());
-					} catch(NumberFormatException nfe) {
-						// Do nothing
-					}
-				} else if(key.equalsIgnoreCase("file-type")) {
-					fileType = (String) diagnostics.get(key);
-				} else if(key.equalsIgnoreCase("file-name")) {
-					fileName = (String) diagnostics.get(key);
-				}
-			}
-		}
-		this.size = size;
-		this.fileType = fileType;
-		this.fileName = fileName;
-	}
+    /**
+     * @param fileName
+     * @param content
+     * @param size
+     * @param fileType
+     */
+    public TapAttachment(String fileName, byte[] content, int size,
+            String fileType) {
+        super();
+        this.fileName = fileName;
+        this.content = content;
+        this.size = size;
+        this.fileType = fileType;
+    }
+    
+    /**
+     * @param fileName
+     * @param content
+     * @param size
+     * @param fileType
+     */
+    public TapAttachment(byte[] content, Map<String, Object> diagnostics) {
+        super();
+        this.content = content;
+        int size = -1;
+        String fileType = "";
+        String fileName = "tapAttachment";
+        for(String key : diagnostics.keySet()) {
+            if(diagnostics.get(key) instanceof Map<?, ?> == Boolean.FALSE) {
+                if(key.equalsIgnoreCase("file-size")) {
+                    try {
+                        size = (int) Long.parseLong(diagnostics.get(key).toString());
+                    } catch(NumberFormatException nfe) {
+                        // Do nothing
+                    }
+                } else if(key.equalsIgnoreCase("file-type")) {
+                    fileType = (String) diagnostics.get(key);
+                } else if(key.equalsIgnoreCase("file-name")) {
+                    fileName = (String) diagnostics.get(key);
+                }
+            }
+        }
+        this.size = size;
+        this.fileType = fileType;
+        this.fileName = fileName;
+    }
 
-	/**
-	 * @return the fileName
-	 */
-	public String getFileName() {
-		return fileName;
-	}
+    /**
+     * @return the fileName
+     */
+    public String getFileName() {
+        return fileName;
+    }
 
-	/**
-	 * @return the content
-	 */
-	public byte[] getContent() {
-		return content;
-	}
+    /**
+     * @return the content
+     */
+    public byte[] getContent() {
+        return content;
+    }
 
-	/**
-	 * @return the size
-	 */
-	public int getSize() {
-		return size;
-	}
+    /**
+     * @return the size
+     */
+    public int getSize() {
+        return size;
+    }
 
-	/**
-	 * @return the fileType
-	 */
-	public String getFileType() {
-		return fileType;
-	}
+    /**
+     * @return the fileType
+     */
+    public String getFileType() {
+        return fileType;
+    }
 
 }

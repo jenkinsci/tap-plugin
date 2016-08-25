@@ -1,3 +1,4 @@
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
 	xmlns:i="jelly:fmt" xmlns:tap="/org/tap4j/plugin/tags">
@@ -6,18 +7,30 @@
         <j:when test="${attrs.tapLine != null}">
 	        <j:set var="tapLine" value="${attrs.tapLine}" />
 	        <j:set var="tapFile" value="${attrs.tapFile}" />
+	        <j:set var="showOnlyFailures" value="${attrs.showOnlyFailures}" />
 	        <j:choose>
                 <j:when test="${it.isTestResult( tapLine )}">
-				    <tr>
-				        <tap:status testResult="${tapLine}" />
-				        <td width="5%" class="center">${tapLine.testNumber}</td>
-				        <td width="65%">${tapLine.description}</td>
-				        <tap:directive directive="${tapLine.directive}" />
-				    </tr>
-				    <!-- Comments diagnostics -->
-                    <!-- tap:comments diagnostic="${tapLine.comments}" /-->
-				    <!-- YAML Diagnostics -->
-                    <tap:yaml diagnostic="${tapLine.diagnostic}" tapFile="${tapFile}" />
+                	<j:set var="hide" value="false" /> 
+                	<j:if test="${showOnlyFailures}">
+            			<j:if test="${tapLine != null}">
+							<j:set var="testResult" value="${tapLine}" />
+							<j:if test="${testResult.status.toString() == 'ok'}">
+								<j:set var="hide" value="true" />
+							</j:if>
+						</j:if>
+            		</j:if>
+            		<j:if test="${hide == 'false'}">
+					    <tr>
+					        <tap:status testResult="${tapLine}" />
+					        <td width="5%" class="center">${tapLine.testNumber}</td>
+					        <td width="65%">${tapLine.description}</td>
+					        <tap:directive directive="${tapLine.directive}" />
+					    </tr>
+					    <!-- Comments diagnostics -->
+	                    <!-- tap:comments diagnostic="${tapLine.comments}" /-->
+					    <!-- YAML Diagnostics -->
+	                    <tap:yaml diagnostic="${tapLine.diagnostic}" tapFile="${tapFile}" />
+	                </j:if>
 				</j:when>
 				<j:when  test="${it.isBailOut( tapLine )}">
 				    <tr>

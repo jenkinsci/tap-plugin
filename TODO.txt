@@ -1,0 +1,5 @@
+- fix performance issues
+- TapTestResultResult and TapResult could be merged?
+- look for code duplication
+- remove TapStreamResult#getFailedTests2()
+- look for open tasks

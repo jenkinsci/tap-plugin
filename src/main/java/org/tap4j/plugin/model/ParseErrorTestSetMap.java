@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) <2012> <Bruno P. Kinoshita>
+ * Copyright (c) 2012 Bruno P. Kinoshita
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,24 +32,24 @@ package org.tap4j.plugin.model;
  */
 public class ParseErrorTestSetMap extends TestSetMap {
 
-	private static final long serialVersionUID = 6433486962160499201L;
-	
-	private final Throwable cause;
-	
-	/**
-	 * @param fileName
-	 * @param testSet
-	 */
-	public ParseErrorTestSetMap(String fileName, Throwable cause) {
-		super(fileName, null);
-		this.cause = cause;
-	}
-	
-	/**
-	 * @return the cause
-	 */
-	public Throwable getCause() {
-		return cause;
-	}
+    private static final long serialVersionUID = 6433486962160499201L;
+    
+    private final Throwable cause;
+    
+    /**
+     * @param fileName
+     * @param testSet
+     */
+    public ParseErrorTestSetMap(String fileName, Throwable cause) {
+        super(fileName, null);
+        this.cause = cause;
+    }
+    
+    /**
+     * @return the cause
+     */
+    public Throwable getCause() {
+        return cause;
+    }
 
 }

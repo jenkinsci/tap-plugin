@@ -1,174 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ~ The MIT License ~ ~ Copyright (c) 2012-2014, TupiLabs, Bruno P. Kinoshita 
+	~ ~ Permission is hereby granted, free of charge, to any person obtaining 
+	a copy ~ of this software and associated documentation files (the "Software"), 
+	to deal ~ in the Software without restriction, including without limitation 
+	the rights ~ to use, copy, modify, merge, publish, distribute, sublicense, 
+	and/or sell ~ copies of the Software, and to permit persons to whom the Software 
+	is ~ furnished to do so, subject to the following conditions: ~ ~ The above 
+	copyright notice and this permission notice shall be included in ~ all copies 
+	or substantial portions of the Software. ~ ~ THE SOFTWARE IS PROVIDED "AS 
+	IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR ~ IMPLIED, INCLUDING BUT NOT 
+	LIMITED TO THE WARRANTIES OF MERCHANTABILITY, ~ FITNESS FOR A PARTICULAR 
+	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE ~ AUTHORS OR COPYRIGHT 
+	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER ~ LIABILITY, WHETHER IN 
+	AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, ~ OUT OF OR IN CONNECTION 
+	WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN ~ THE SOFTWARE. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.jenkins-ci.plugins</groupId>
-        <artifactId>plugin</artifactId>
-        <version>1.488</version><!-- which version of Jenkins is this plugin built
-            against? -->
-    </parent>
+	<parent>
+		<groupId>org.jenkins-ci.plugins</groupId>
+		<artifactId>plugin</artifactId>
+		<version>1.580.3</version><!-- which version of Jenkins is this plugin 
+			built against? -->
+	</parent>
 
-    <inceptionYear>2011</inceptionYear>
+	<inceptionYear>2011</inceptionYear>
 
-    <groupId>org.tap4j</groupId>
-    <artifactId>tap</artifactId>
-    <name>Jenkins TAP Plugin</name>
-    <version>1.18-SNAPSHOT</version>
-    <packaging>hpi</packaging>
+	<groupId>org.tap4j</groupId>
+	<artifactId>tap</artifactId>
+	<name>Jenkins TAP Plugin</name>
+	<version>2.1-SNAPSHOT</version>
+	<packaging>hpi</packaging>
 
-    <description>This plugin publishes TAP test results.</description>
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://opensource.org/licenses/MIT</url>
+		</license>
+	</licenses>
 
-    <url>http://wiki.jenkins-ci.org/display/JENKINS/TAP+Plugin</url>
+	<description>This plugin publishes TAP test results.</description>
 
-    <organization>
-        <name>Jenkins</name>
-        <url>http://www.jenkins-ci.org</url>
-    </organization>
+	<url>http://wiki.jenkins-ci.org/display/JENKINS/TAP+Plugin</url>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+	<organization>
+		<name>Jenkins</name>
+		<url>http://www.jenkins-ci.org</url>
+	</organization>
 
-    <issueManagement>
-        <system>JIRA</system>
-        <url>https://issues.jenkins-ci.org/browse/JENKINS/component/15874</url>
-    </issueManagement>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jdk.source>1.7</jdk.source>
+		<jdk.target>1.7</jdk.target>
+		<jdk.debug>true</jdk.debug>
+		<jdk.optimize>false</jdk.optimize>
+	</properties>
 
-    <distributionManagement>
-        <repository>
-            <id>maven.jenkins-ci.org</id>
-            <url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
-        </repository>
-    </distributionManagement>
+	<issueManagement>
+		<system>JIRA</system>
+		<url>https://issues.jenkins-ci.org/browse/JENKINS/component/15874</url>
+	</issueManagement>
 
-        <developers>
-        <developer>
-            <id>kinow</id>
-            <name>Bruno P. Kinoshita</name>
-            <email>brunodepaulak@yahoo.com.br</email>
-            <timezone>-3</timezone>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
-    </developers>
+	<distributionManagement>
+		<repository>
+			<id>maven.jenkins-ci.org</id>
+			<name>jenkinsci-releases</name>
+			<url>https://repo.jenkins-ci.org/releases/</url>
+		</repository>
+	</distributionManagement>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.apache.maven.plugins</groupId>
-                                        <artifactId>maven-enforcer-plugin</artifactId>
-                                        <versionRange>[1.0,)</versionRange>
-                                        <goals>
-                                            <goal>display-info</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute />
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.codehaus.groovy.maven</groupId>
-                                        <artifactId>gmaven-plugin</artifactId>
-                                        <versionRange>[1.0-rc-5,)</versionRange>
-                                        <goals>
-                                            <goal>generateTestStubs</goal>
-                                            <goal>testCompile</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute />
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.jenkins-ci.tools</groupId>
-                                        <artifactId>maven-hpi-plugin</artifactId>
-                                        <versionRange>[1.64,)</versionRange>
-                                        <goals>
-                                            <goal>apt-compile</goal>
-                                            <goal>insert-test</goal>
-                                            <goal>resolve-test</goal>
-                                            <goal>test-hpl</goal>
-                                            <goal>resolve-test-dependencies</goal>
-                                            <goal>default-test</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore />
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.jvnet.localizer</groupId>
-                                        <artifactId>maven-localizer-plugin</artifactId>
-                                        <versionRange>[1.8,)</versionRange>
-                                        <goals>
-                                            <goal>generate</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute />
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.kohsuke</groupId>
-                                        <artifactId>access-modifier-checker</artifactId>
-                                        <versionRange>[1.0,)</versionRange>
-                                        <goals>
-                                            <goal>enforce</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute />
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+	<developers>
+		<developer>
+			<id>kinow</id>
+			<name>Bruno P. Kinoshita</name>
+			<email>brunodepaulak@yahoo.com.br</email>
+			<timezone>-3</timezone>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+	</developers>
 
-    <scm>
-        <connection>scm:git:git://github.com/jenkinsci/tap-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:jenkinsci/tap-plugin.git</developerConnection>
-        <url>http://github.com/jenkinsci/tap-plugin</url>
-    </scm>
+	<scm>
+		<connection>scm:git:git://github.com/jenkinsci/tap-plugin.git</connection>
+		<developerConnection>scm:git:git@github.com:jenkinsci/tap-plugin.git</developerConnection>
+		<url>http://github.com/jenkinsci/tap-plugin</url>
+		<tag>HEAD</tag>
+	</scm>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.tap4j</groupId>
-            <artifactId>tap4j</artifactId>
-            <version>4.0.7</version>
-        </dependency>
-    </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>org.tap4j</groupId>
+			<artifactId>tap4j</artifactId>
+			<version>4.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>matrix-project</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>junit</artifactId>
+			<version>1.6</version>
+		</dependency>
+	</dependencies>
 
-    <repositories>
-        <repository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </repository>
-    </repositories>
+	<repositories>
+		<repository>
+			<id>repo.jenkins-ci.org</id>
+			<url>http://repo.jenkins-ci.org/public/</url>
+		</repository>
+	</repositories>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>repo.jenkins-ci.org</id>
+			<url>http://repo.jenkins-ci.org/public/</url>
+		</pluginRepository>
+	</pluginRepositories>
 
-
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven-compiler-plugin.version}</version>
+					<configuration>
+						<source>${jdk.source}</source>
+						<target>${jdk.target}</target>
+						<debug>${jdk.debug}</debug>
+						<optimize>${jdk.optimize}</optimize>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>

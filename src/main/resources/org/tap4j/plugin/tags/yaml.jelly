@@ -1,3 +1,4 @@
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
 	xmlns:i="jelly:fmt" xmlns:tap="/org/tap4j/plugin/tags">
@@ -7,7 +8,7 @@
 		<j:set var="diagnostic" value="${attrs.diagnostic}" />
 		<j:set var="tapFile" value="${attrs.tapFile}" />
         
-        ${ it.createDiagnosticTable( tapFile, diagnostic ) }
+        <j:out value="${ it.createDiagnosticTable( tapFile, diagnostic ) }"/>
         
         <!--tr>
             <table width="100%" class="yaml">

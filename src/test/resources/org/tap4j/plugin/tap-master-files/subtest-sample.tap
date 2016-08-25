@@ -1,0 +1,144 @@
+TAP version 13
+    # Subtest: test/tap/access.js
+        # Subtest: setup
+        ok 1 - /workdir/npm-module/test/tap/access made successfully
+        ok 2 - registry mocked successfully
+        ok 3 - wrote package.json
+        1..3
+    ok 1 - setup # time=68.43ms
+
+        # Subtest: npm access public on current package
+        ok 1 - npm access
+        ok 2 - exited OK
+        ok 3 - no error output
+        1..3
+    ok 2 - npm access public on current package # time=543.472ms
+
+        # Subtest: npm access public when no package passed and no package.json
+        ok 1 - npm access
+        ok 2 - should match pattern provided
+        1..2
+    ok 3 - npm access public when no package passed and no package.json # time=457.195ms
+
+        # Subtest: npm access public when no package passed and invalid package.json
+        ok 1 - npm access
+        ok 2 - should match pattern provided
+        1..2
+    ok 4 - npm access public when no package passed and invalid package.json # time=458.715ms
+
+        # Subtest: npm access restricted on current package
+        ok 1 - npm access
+        ok 2 - exited OK
+        ok 3 - no error output
+        1..3
+    ok 5 - npm access restricted on current package # time=548.049ms
+
+        # Subtest: npm access on named package
+        ok 1 - npm access
+        ok 2 - exited OK
+        ok 3 - no error output
+        1..3
+    ok 6 - npm access on named package # time=519.159ms
+
+        # Subtest: npm change access on unscoped package
+        ok 1 - exited with Error
+        ok 2 - should match pattern provided
+        1..2
+    ok 7 - npm change access on unscoped package # time=461.458ms
+
+        # Subtest: npm access grant read-only
+        ok 1 - npm access grant
+        ok 2 - exited with Error
+        1..2
+    ok 8 - npm access grant read-only # time=517.935ms
+
+        # Subtest: npm access grant read-write
+        ok 1 - npm access grant
+        ok 2 - exited with Error
+        1..2
+    ok 9 - npm access grant read-write # time=525.574ms
+
+        # Subtest: npm access grant others
+        ok 1 - exited with Error
+        ok 2 - should match pattern provided
+        ok 3 - should match pattern provided
+        1..3
+    ok 10 - npm access grant others # time=473.668ms
+
+        # Subtest: npm access revoke
+        ok 1 - npm access grant
+        ok 2 - exited with Error
+        1..2
+    ok 11 - npm access revoke # time=529.943ms
+
+        # Subtest: npm access ls-packages with no team
+        ok 1 - npm access ls-packages
+        ok 2 - should be equivalent
+        1..2
+    ok 12 - npm access ls-packages with no team # time=512.118ms
+
+        # Subtest: npm access ls-packages on team
+        ok 1 - npm access ls-packages
+        ok 2 - should be equivalent
+        1..2
+    ok 13 - npm access ls-packages on team # time=530.445ms
+
+        # Subtest: npm access ls-packages on org
+        ok 1 - npm access ls-packages
+        ok 2 - should be equivalent
+        1..2
+    ok 14 - npm access ls-packages on org # time=538.885ms
+
+        # Subtest: npm access ls-packages on user
+        ok 1 - npm access ls-packages
+        ok 2 - should be equivalent
+        1..2
+    ok 15 - npm access ls-packages on user # time=509.704ms
+
+        # Subtest: npm access ls-packages with no package specified or package.json
+        ok 1 - npm access ls-packages
+        ok 2 - should be equivalent
+        1..2
+    ok 16 - npm access ls-packages with no package specified or package.json # time=506.721ms
+
+        # Subtest: npm access ls-collaborators on current
+        ok 1 - npm access ls-collaborators
+        ok 2 - should be equivalent
+        1..2
+    ok 17 - npm access ls-collaborators on current # time=516.851ms
+
+        # Subtest: npm access ls-collaborators on package
+        ok 1 - npm access ls-collaborators
+        ok 2 - should be equivalent
+        1..2
+    ok 18 - npm access ls-collaborators on package # time=508.724ms
+
+        # Subtest: npm access ls-collaborators on current w/user filter
+        ok 1 - npm access ls-collaborators
+        ok 2 - should be equivalent
+        1..2
+    ok 19 - npm access ls-collaborators on current w/user filter # time=501.361ms
+
+        # Subtest: npm access edit
+        ok 1 - exited with Error
+        ok 2 - should match pattern provided
+        1..2
+    ok 20 - npm access edit # time=444.677ms
+
+        # Subtest: npm access blerg
+        ok 1 - exited with Error
+        ok 2 - should match pattern provided
+        1..2
+    ok 21 - npm access blerg # time=443.858ms
+
+        # Subtest: cleanup
+        ok 1 - cleaned up
+        1..1
+    ok 22 - cleanup # time=3.574ms
+
+    1..22
+    # time=10166.406ms
+ok 1 - test/tap/access.js # time=10398.064ms
+
+1..1
+# time=10431.957ms
