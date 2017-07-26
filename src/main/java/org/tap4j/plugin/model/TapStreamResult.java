@@ -35,8 +35,6 @@ import org.tap4j.model.TestSet;
 import org.tap4j.plugin.TapResult;
 import org.tap4j.util.StatusValues;
 
-import com.gargoylesoftware.htmlunit.javascript.host.Console;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -209,7 +207,7 @@ public class TapStreamResult extends TabulatedResult {
         for(TestSetMap tsm : tapResult.getTestSets()) {
             if(tsm.getFileName().equals(fileName)) {
                 TestSet ts = tsm.getTestSet();
-                org.tap4j.model.TestResult desired = ts.getTestResult(Integer.parseInt(testNumber));                
+                org.tap4j.model.TestResult desired = ts.getTestResult(Integer.parseInt(testNumber));
                 return new TapTestResultResult(owner, tsm, desired, this.tapResult.getTodoIsFailure(), tapResult.getIncludeCommentDiagnostics(), tapResult.getValidateNumberOfTests());
             }
         }
