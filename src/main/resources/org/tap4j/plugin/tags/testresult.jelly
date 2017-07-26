@@ -1,0 +1,62 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+	xmlns:i="jelly:fmt" xmlns:tap="/org/tap4j/plugin/tags">
+
+    <j:choose>
+        <j:when test="${attrs.testResult != null}">
+	        <j:set var="testResult" value="${attrs.testResult}" />
+	        <j:set var="tapFile" value="${attrs.tapFile}" />
+	        <j:set var="showOnlyFailures" value="${attrs.showOnlyFailures}" />
+	        <j:choose>
+                <j:when test="${it.isTestResult( testResult )}">
+                	<j:set var="hide" value="false" /> 
+                	<j:if test="${showOnlyFailures}">
+            			<j:if test="${testResult != null}">
+							<j:set var="testResult" value="${testResult}" />
+							<j:if test="${testResult.status.toString() == 'ok'}">
+								<j:set var="hide" value="true" />
+							</j:if>
+						</j:if>
+            		</j:if>
+            		<j:if test="${hide == 'false'}">
+					    <tr>
+					        <tap:status testResult="${testResult}"/>
+					        <td width="65%">${testResult.description}
+						        <table width="100%">
+						        <j:forEach var="tapLine" items="${testResult.subtest.tapLines}">	
+									<tap:line tapLine="${tapLine}" tapFile="${map.fileName}" showOnlyFailures="${it.showOnlyFailures}" />							
+								</j:forEach>
+								</table>
+					        </td>					        
+					        <tap:directive directive="${testResult.directive}" />
+					    </tr>
+					 
+					    <!-- Comments diagnostics -->
+	                    <!-- tap:comments diagnostic="${testResult.comments}" /-->
+					    <!-- YAML Diagnostics -->
+	                    <tap:yaml diagnostic="${testResult.diagnostic}" tapFile="${tapFile}" />
+	                </j:if>
+				</j:when>
+				<j:when  test="${it.isBailOut( testResult )}">
+				    <tr>
+                        <td class="red center" width="5%"><img src="/plugin/tap/icons/exclamation.png" alt="Bail out! ${testResult.reason}" title="Bail out! ${testResult.reason}" /></td>
+                        <td width="5%" class="center"> </td>
+                        <td width="65%"><span class="red_text bold">Bail out! ${testResult.reason}</span></td>
+                        <tap:directive directive="" />
+                    </tr>
+				</j:when>
+				<j:when test="${it.isComment( testResult ) and it.includeCommentDiagnostics}">
+                    <tr>
+                        <td></td>
+                        <td colspan='3'>
+                            # ${it.escapeHTML(testResult.text)}<br/>
+                        </td>
+                    </tr>
+                </j:when>
+		    </j:choose>
+        </j:when>
+            <j:otherwise></j:otherwise>
+    </j:choose>
+
+</j:jelly>

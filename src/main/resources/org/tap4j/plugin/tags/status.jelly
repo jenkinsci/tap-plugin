@@ -6,18 +6,19 @@
 	<j:choose>
 		<j:when test="${attrs.testResult != null}">
 			<j:set var="testResult" value="${attrs.testResult}" />
+			
 			<j:choose>
 				<j:when test="${testResult.directive != null and testResult.directive.directiveValue.toString() == 'SKIP'}">
-					<td class="yellow" width="5%"> </td>
+					<td class="yellow" width="5%">${testResult.testNumber} </td>
 				</j:when>
 				<j:when test="${testResult.directive != null and testResult.directive.directiveValue.toString() == 'TODO'}">
-					<td class="cyan" width="5%"> </td>
+					<td class="cyan" width="5%">${testResult.testNumber} </td>
 				</j:when>
 				<j:when test="${testResult.status.toString() == 'ok'}">
-					<td class="green" width="5%"> </td>
+					<td class="green" width="5%">${testResult.testNumber} </td>
 				</j:when>
 				<j:otherwise>
-					<td class="red" width="5%"> </td>
+					<td class="red" width="5%">${testResult.testNumber} </td>
 				</j:otherwise>
 			</j:choose>
 		</j:when>

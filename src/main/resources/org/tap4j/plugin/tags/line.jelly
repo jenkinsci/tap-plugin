@@ -22,8 +22,7 @@
             		<j:if test="${hide == 'false'}">
 					    <tr>
 					        <tap:status testResult="${tapLine}" />
-					        <td width="5%" class="center">${tapLine.testNumber}</td>
-					        <td width="65%">${tapLine.description}</td>
+					        <td width="65%">${tapLine.description}</td>					        
 					        <tap:directive directive="${tapLine.directive}" />
 					    </tr>
 					    <!-- Comments diagnostics -->
