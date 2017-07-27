@@ -46,16 +46,16 @@
 								<th>Description</th>
 								<th>Directive</th>
 							</tr>
-							<j:forEach var="TestResult" items="${map.testSet.testResults}">
+							<j:forEach var="tapLine" items="${map.testSet.tapLines}">
 								<!-- TAP Test Result information -->	
 								<j:choose>							
 								<j:when test="${it.flattenTapResult}">
 								<!-- Original render way -->
-								<tap:line tapLine="${TestResult}" tapFile="${map.fileName}" showOnlyFailures="${it.showOnlyFailures}" />								
+								<tap:line tapLine="${tapLine}" tapIndent="0" tapFile="${map.fileName}" showOnlyFailures="${it.showOnlyFailures}" />								
 								</j:when>
 								<j:otherwise>
 								<!-- Hierarchical render way -->
-								<tap:testresult testResult="${TestResult}" tapFile="${map.fileName}" showOnlyFailures="${it.showOnlyFailures}" />
+								<tap:testresult tapLine="${tapLine}" tapIndent="0" tapFile="${map.fileName}" showOnlyFailures="${it.showOnlyFailures}" />
 								</j:otherwise>
 		    					</j:choose>
 							</j:forEach>

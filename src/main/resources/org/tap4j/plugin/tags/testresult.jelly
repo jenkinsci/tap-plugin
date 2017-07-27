@@ -4,16 +4,16 @@
 	xmlns:i="jelly:fmt" xmlns:tap="/org/tap4j/plugin/tags">
 
     <j:choose>
-        <j:when test="${attrs.testResult != null}">
-	        <j:set var="testResult" value="${attrs.testResult}" />
+        <j:when test="${attrs.tapLine != null}">
+	        <j:set var="tapLine" value="${attrs.tapLine}" />
 	        <j:set var="tapFile" value="${attrs.tapFile}" />
 	        <j:set var="showOnlyFailures" value="${attrs.showOnlyFailures}" />
 	        <j:choose>
-                <j:when test="${it.isTestResult( testResult )}">
-                	<j:set var="hide" value="false" /> 
+                <j:when test="${it.isTestResult( tapLine )}">
+                <j:set var="hide" value="false" /> 
                 	<j:if test="${showOnlyFailures}">
-            			<j:if test="${testResult != null}">
-							<j:set var="testResult" value="${testResult}" />
+            			<j:if test="${tapLine != null}">
+							<j:set var="testResult" value="${tapLine}" />
 							<j:if test="${testResult.status.toString() == 'ok'}">
 								<j:set var="hide" value="true" />
 							</j:if>
@@ -21,21 +21,20 @@
             		</j:if>
             		<j:if test="${hide == 'false'}">
 					    <tr>
-					        <tap:status testResult="${testResult}"/>
-					        <td width="65%">${testResult.description}
-						        <table width="100%">
-						        <j:forEach var="tapLine" items="${testResult.subtest.tapLines}">	
-									<tap:line tapLine="${tapLine}" tapFile="${map.fileName}" showOnlyFailures="${it.showOnlyFailures}" />							
-								</j:forEach>
-								</table>
+					        <tap:status testResult="${tapLine}" testIndent="${tapIndent}" />
+					        <td width="65%">${tapLine.description}
+					        <!-- Comments diagnostics -->
+		                    <!-- tap:comments diagnostic="${tapLine.comments}" /-->
+						    <!-- YAML Diagnostics -->
+		                    <tap:yaml diagnostic="${tapLine.diagnostic}" tapFile="${tapFile}" />
 					        </td>					        
-					        <tap:directive directive="${testResult.directive}" />
+					        <tap:directive directive="${tapLine.directive}" />
 					    </tr>
-					 
-					    <!-- Comments diagnostics -->
-	                    <!-- tap:comments diagnostic="${testResult.comments}" /-->
-					    <!-- YAML Diagnostics -->
-	                    <tap:yaml diagnostic="${testResult.diagnostic}" tapFile="${tapFile}" />
+						
+				        <j:forEach var="tapLine" items="${tapLine.subtest.tapLines}">	
+							<tap:testresult1 tapLine="${tapLine}" tapFile="${map.fileName}" tapIndent="${tapIndent+1}" showOnlyFailures="${it.showOnlyFailures}" />							
+						</j:forEach>
+					       
 	                </j:if>
 				</j:when>
 				<j:when  test="${it.isBailOut( testResult )}">

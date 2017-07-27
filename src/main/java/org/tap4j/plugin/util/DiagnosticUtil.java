@@ -39,9 +39,9 @@ public class DiagnosticUtil {
         TEXT, IMAGE
     };
 
-    private static final String INNER_TABLE_HEADER = "<tr>\n<td colspan='4' class='yaml'>\n<table width=\"100%\" class=\"yaml\">";
+    private static final String INNER_TABLE_HEADER = "<table width=\"100%\" class=\"yaml\">";
 
-    private static final String INNER_TABLE_FOOTER = "</table>\n</td>\n</tr>";
+    private static final String INNER_TABLE_FOOTER = "</table>\n";
 
     private DiagnosticUtil() {
         super();
