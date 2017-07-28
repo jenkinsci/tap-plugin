@@ -16,6 +16,7 @@ table.tap
 {
 border: 0px solid;
 border-collapse:collapse;
+height:100%;
 }
 
 table.tap th
