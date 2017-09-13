@@ -32,7 +32,7 @@
 					    </tr>
 						
 				        <j:forEach var="tapLine" items="${tapLine.subtest.tapLines}">	
-							<tap:testResult3 tapLine="${tapLine}" tapFile="${map.fileName}" tapIndent="${tapIndent+1}" showOnlyFailures="${it.showOnlyFailures}" />							
+							<tap:testresult3 tapLine="${tapLine}" tapFile="${map.fileName}" tapIndent="${tapIndent+1}" showOnlyFailures="${it.showOnlyFailures}" />							
 						</j:forEach>
 					       
 	                </j:if>
