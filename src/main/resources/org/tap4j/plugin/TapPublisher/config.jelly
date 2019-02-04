@@ -3,48 +3,20 @@
   <f:entry title="Test results" field="testResults">
     <f:textbox />
   </f:entry>
-  <f:entry title="Verbose (if checked will print a message for each TAP stream file)">
-      <f:checkbox name="TapPublisher.verbose" value="${instance.verbose}" checked="${instance.verbose}" default="true" />
-  </f:entry>
+  <f:optionalBlock title="Verbose (if checked will print a message for each TAP stream file)" name="TapPublisher.verbose" value="${instance.verbose}" checked="${instance.verbose}" default="true" />
   <f:advanced>
-      <f:entry title="Fail the build if no test results (files) are found" help="/plugin/tap/help/TapPublisher/help-failIfNoResults.html">
-          <f:checkbox name="TapPublisher.failIfNoResults" value="${instance.failIfNoResults}" checked="${instance.failIfNoResults}"/>
-      </f:entry>
-      <f:entry title="Failed tests mark build as failure">
-          <f:checkbox name="TapPublisher.failedTestsMarkBuildAsFailure" value="${instance.failedTestsMarkBuildAsFailure}" checked="${instance.failedTestsMarkBuildAsFailure}" />
-      </f:entry>
-      <f:entry title="Output TAP to console">
-          <f:checkbox name="TapPublisher.outputTapToConsole" value="${instance.outputTapToConsole}" checked="${instance.outputTapToConsole}" />
-      </f:entry>
-      <f:entry title="Enable subtests">
-          <f:checkbox name="TapPublisher.enableSubtests" value="${instance.enableSubtests}" checked="${instance.enableSubtests}" />
-      </f:entry>
-      <f:entry title="Discard old reports">
-          <f:checkbox name="TapPublisher.discardOldReports" value="${instance.discardOldReports}" checked="${instance.discardOldReports}" />
-      </f:entry>
-      <f:entry title="TODO directive fails a test">
-          <f:checkbox name="TapPublisher.todoIsFailure" value="${instance.todoIsFailure}" checked="${instance.todoIsFailure}" />
-      </f:entry>
-      <f:entry title="Include comment diagnostics (#) in the results table">
-          <f:checkbox name="TapPublisher.includeCommentDiagnostics" value="${instance.includeCommentDiagnostics}" checked="${instance.includeCommentDiagnostics}" />
-      </f:entry>
-      <f:entry title="Validate number of tests">
-          <f:checkbox name="TapPublisher.validateNumberOfTests" value="${instance.validateNumberOfTests}" checked="${instance.validateNumberOfTests}" />
-      </f:entry>
-      <f:entry title="Is TAP plan required?">
-          <f:checkbox name="TapPublisher.planRequired" value="${instance.planRequired}" checked="${instance.planRequired}" default="true" />
-      </f:entry>
-      <f:entry title="Show only failures">
-          <f:checkbox name="TapPublisher.showOnlyFailures" value="${instance.showOnlyFailures}" checked="${instance.showOnlyFailures}" default="false" />
-      </f:entry>
-      <f:entry title="Strip single parents">
-          <f:checkbox name="TapPublisher.stripSingleParents" value="${instance.stripSingleParents}" checked="${instance.stripSingleParents}" default="false" />
-      </f:entry>
-      <f:entry title="Flatten TAP result">
-          <f:checkbox name="TapPublisher.flattenTapResult" value="${instance.flattenTapResult}" checked="${instance.flattenTapResult}" default="false" />
-      </f:entry>
-      <f:entry title="Skip if build not successful" help="/plugin/tap/help/TapPublisher/help-skipIfBuildNotOk.html">
-          <f:checkbox name="TapPublisher.skipIfBuildNotOk" value="${instance.skipIfBuildNotOk}" checked="${instance.skipIfBuildNotOk}" default="false" />
-      </f:entry>
+      <f:optionalBlock title="Fail the build if no test results (files) are found" help="/plugin/tap/help/TapPublisher/help-failIfNoResults.html" name="TapPublisher.failIfNoResults" value="${instance.failIfNoResults}" checked="${instance.failIfNoResults}"/>
+      <f:optionalBlock title="Failed tests mark build as failure" name="TapPublisher.failedTestsMarkBuildAsFailure" value="${instance.failedTestsMarkBuildAsFailure}" checked="${instance.failedTestsMarkBuildAsFailure}" />
+      <f:optionalBlock title="Output TAP to console" name="TapPublisher.outputTapToConsole" value="${instance.outputTapToConsole}" checked="${instance.outputTapToConsole}" />
+      <f:optionalBlock title="Enable subtests" name="TapPublisher.enableSubtests" value="${instance.enableSubtests}" checked="${instance.enableSubtests}" />
+      <f:optionalBlock title="Discard old reports" name="TapPublisher.discardOldReports" value="${instance.discardOldReports}" checked="${instance.discardOldReports}" />
+      <f:optionalBlock title="TODO directive fails a test" name="TapPublisher.todoIsFailure" value="${instance.todoIsFailure}" checked="${instance.todoIsFailure}" />
+      <f:optionalBlock title="Include comment diagnostics (#) in the results table" name="TapPublisher.includeCommentDiagnostics" value="${instance.includeCommentDiagnostics}" checked="${instance.includeCommentDiagnostics}" />
+      <f:optionalBlock title="Validate number of tests" name="TapPublisher.validateNumberOfTests" value="${instance.validateNumberOfTests}" checked="${instance.validateNumberOfTests}" />
+      <f:optionalBlock title="Is TAP plan required?" name="TapPublisher.planRequired" value="${instance.planRequired}" checked="${instance.planRequired}" default="true" />
+      <f:optionalBlock title="Show only failures" name="TapPublisher.showOnlyFailures" value="${instance.showOnlyFailures}" checked="${instance.showOnlyFailures}" default="false" />
+      <f:optionalBlock title="Strip single parents" name="TapPublisher.stripSingleParents" value="${instance.stripSingleParents}" checked="${instance.stripSingleParents}" default="false" />
+      <f:optionalBlock title="Flatten TAP result" name="TapPublisher.flattenTapResult" value="${instance.flattenTapResult}" checked="${instance.flattenTapResult}" default="false" />
+      <f:optionalBlock title="Skip if build not successful" help="/plugin/tap/help/TapPublisher/help-skipIfBuildNotOk.html" name="TapPublisher.skipIfBuildNotOk" value="${instance.skipIfBuildNotOk}" checked="${instance.skipIfBuildNotOk}" default="false" />
   </f:advanced>
 </j:jelly>
