@@ -55,6 +55,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tap4j.version>4.4.2</tap4j.version>
 		<junit.plugin.version>1.6</junit.plugin.version>
+                <dashboard.plugin.version>2.0</dashboard.plugin.version>
 		<!-- TODO: remove once FindBugs issues are fixed -->
 		<findbugs.failOnError>false</findbugs.failOnError>
 	</properties>
@@ -110,6 +111,12 @@
 			<artifactId>junit</artifactId>
 			<version>${junit.plugin.version}</version>
 		</dependency>
+                <!-- For dashboard view support -->
+                <dependency>
+                        <groupId>org.jenkins-ci.plugins</groupId>
+                        <artifactId>dashboard-view</artifactId>
+                        <version>${dashboard.plugin.version}</version>
+                </dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>org.jenkins-ci.plugins.workflow</groupId>
