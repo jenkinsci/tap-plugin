@@ -2,17 +2,17 @@
  * The MIT License
  *
  * Copyright (c) 2012 Bruno P. Kinoshita
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -58,7 +58,7 @@ public class TapStreamResult extends TabulatedResult {
         this.tapResult = tapResult;
         setChildrenInfo();
     }
-    
+
     /* (non-Javadoc)
      * @see hudson.model.ModelObject#getDisplayName()
      */
@@ -89,7 +89,7 @@ public class TapStreamResult extends TabulatedResult {
     public TestResult findCorrespondingResult(String id) {
         return null;
     }
-    
+
     /* (non-Javadoc)
      * @see hudson.tasks.test.TabulatedResult#getChildren()
      */
@@ -105,7 +105,7 @@ public class TapStreamResult extends TabulatedResult {
     public boolean hasChildren() {
         return children.size() > 0;
     }
-    
+
     /* (non-Javadoc)
      * @see hudson.tasks.test.AbstractTestResultAction#getFailCount()
      */
@@ -123,7 +123,7 @@ public class TapStreamResult extends TabulatedResult {
     public int getTotalCount() {
         return tapResult.getTotal();
     }
-    
+
     /* (non-Javadoc)
      * @see hudson.tasks.test.AbstractTestResultAction#getSkipCount()
      */
@@ -145,16 +145,18 @@ public class TapStreamResult extends TabulatedResult {
         //throw new AssertionError("Not supposed to be called");
         return Collections.emptyList();
     }
-    
+
     // FIXME: use the getFailedTests, or explain why it's not used
     public List<TestResult> getFailedTests2() {
         List<TestResult> failedTests = new ArrayList<TestResult>();
         if(tapResult != null && tapResult.getTestSets().size() > 0) {
             for(TestSetMap tsm : tapResult.getTestSets()) {
                 TestSet ts = tsm.getTestSet();
-                for(org.tap4j.model.TestResult tr : ts.getTestResults()) {
-                    if(tr.getStatus() == StatusValues.NOT_OK) {
-                        failedTests.add(new TapTestResultResult(owner, tsm, tr, this.tapResult.getTodoIsFailure(), tapResult.getIncludeCommentDiagnostics(), tapResult.getValidateNumberOfTests()));
+                if (ts != null) {
+                    for(org.tap4j.model.TestResult tr : ts.getTestResults()) {
+                        if(tr.getStatus() == StatusValues.NOT_OK) {
+                            failedTests.add(new TapTestResultResult(owner, tsm, tr, this.tapResult.getTodoIsFailure(), tapResult.getIncludeCommentDiagnostics(), tapResult.getValidateNumberOfTests()));
+                        }
                     }
                 }
             }
@@ -189,29 +191,31 @@ public class TapStreamResult extends TabulatedResult {
             return null; // we don't allow null, nay!
         if (name.lastIndexOf("-") <= 0)
             return null; // ops, where's the - mate?
-        
+
         name = name.trim();
-        
+
         int rightIndex = name.length();
         while (name.charAt(rightIndex-1) == '/') {
             rightIndex -= 1;
         }
         int leftIndex = name.lastIndexOf('/') +1;
-        
+
         String testResultName = name.substring(leftIndex, rightIndex); // but we want the test result name (testSet1.tap)
         if (testResultName.indexOf('-') <= 0) // plus the number (testSet1.tap-2)
             return null;
         String testNumber = testResultName.substring(testResultName.lastIndexOf('-')+1);
         String fileName = name.substring(0, name.lastIndexOf('-'));
-        
+
         for(TestSetMap tsm : tapResult.getTestSets()) {
             if(tsm.getFileName().equals(fileName)) {
                 TestSet ts = tsm.getTestSet();
-                org.tap4j.model.TestResult desired = ts.getTestResult(Integer.parseInt(testNumber));
-                return new TapTestResultResult(owner, tsm, desired, this.tapResult.getTodoIsFailure(), tapResult.getIncludeCommentDiagnostics(), tapResult.getValidateNumberOfTests());
+                if (ts != null) {
+                    org.tap4j.model.TestResult desired = ts.getTestResult(Integer.parseInt(testNumber));
+                    return new TapTestResultResult(owner, tsm, desired, this.tapResult.getTodoIsFailure(), tapResult.getIncludeCommentDiagnostics(), tapResult.getValidateNumberOfTests());
+                }
             }
         }
-        
+
         return null; // ops, something went wrong
     }
 
@@ -227,8 +231,10 @@ public class TapStreamResult extends TabulatedResult {
     private void setChildrenInfo() {
         for(TestSetMap tsm : tapResult.getTestSets()) {
             TestSet ts = tsm.getTestSet();
-            for(org.tap4j.model.TestResult tr : ts.getTestResults()) {
-                this.children.add(new TapTestResultResult(owner, tsm, tr, tapResult.getTodoIsFailure(), tapResult.getIncludeCommentDiagnostics(), tapResult.getValidateNumberOfTests()));
+            if (ts != null) {
+                for(org.tap4j.model.TestResult tr : ts.getTestResults()) {
+                    this.children.add(new TapTestResultResult(owner, tsm, tr, tapResult.getTodoIsFailure(), tapResult.getIncludeCommentDiagnostics(), tapResult.getValidateNumberOfTests()));
+                }
             }
         }
     }

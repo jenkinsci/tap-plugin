@@ -1,18 +1,18 @@
-/* 
+/*
  * The MIT License
- * 
+ *
  * Copyright (c) 2010 Bruno P. Kinoshita
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,7 +29,7 @@ import java.util.Set;
 
 /**
  * Used to create YAML view.
- * 
+ *
  * @author Bruno P. Kinoshita - http://www.kinoshita.eti.br
  * @since 1.0
  */
@@ -55,7 +55,7 @@ public class DiagnosticUtil {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static void createDiagnosticTableRecursively(String tapFile, String parentKey, 
+    public static void createDiagnosticTableRecursively(String tapFile, String parentKey,
             Map<String, Object> diagnostic, StringBuilder sb, int depth) {
 
         sb.append(INNER_TABLE_HEADER);
@@ -67,11 +67,11 @@ public class DiagnosticUtil {
                 String key = entry.getKey();
                 Object value = entry.getValue();
                 sb.append("<tr>");
-    
+
                 for (int i = 0; i < depth; ++i) {
                     sb.append("<td width='5%' class='hidden'> </td>");
                 }
-                sb.append("<td style=\"width: auto;\">" + key + "</td>");
+                sb.append("<td style=\"width: auto;\">").append(key).append("</td>");
                 if(key.equals("File-Content")) {
                     String fileName = "attachment";
                     Object o = diagnostic.get("File-Name");
@@ -84,9 +84,9 @@ public class DiagnosticUtil {
                             downloadKey = parentKey;
                         }
                     }
-                    sb.append("<td><a href='downloadAttachment?f="+tapFile+"&key="+downloadKey+"'>"+fileName+"</a></td>");
+                    sb.append("<td><a href='downloadAttachment?f=").append(tapFile).append("&key=").append(downloadKey).append("'>").append(fileName).append("</a></td>");
                 } else {
-                    sb.append("<td><pre>" + org.apache.commons.lang.StringEscapeUtils.escapeHtml(value.toString()) + "</pre></td>");
+                    sb.append("<td><pre>").append(org.apache.commons.lang.StringEscapeUtils.escapeHtml(value != null ? value.toString() : "")).append("</pre></td>");
                 }
                 sb.append("</tr>");
             }
@@ -95,7 +95,7 @@ public class DiagnosticUtil {
                 String key = entry.getKey();
                 Object value = entry.getValue();
                 sb.append("<tr>");
-    
+
                 for (int i = 0; i < depth; ++i) {
                     sb.append("<td width='5%' class='hidden'> </td>");
                 }
@@ -105,7 +105,7 @@ public class DiagnosticUtil {
                     createDiagnosticTableRecursively(tapFile, key, (java.util.Map) value, sb,
                             (depth + 1));
                 } else {
-                    sb.append("<td><pre>" + org.apache.commons.lang.StringEscapeUtils.escapeHtml(value.toString()) + "</pre></td>");
+                    sb.append("<td><pre>").append(org.apache.commons.lang.StringEscapeUtils.escapeHtml(value != null ? value.toString() : "")).append("</pre></td>");
                 }
                 sb.append("</tr>");
             }
