@@ -7,11 +7,10 @@
         <j:when test="${attrs.tapLine != null}">
 	        <j:set var="tapLine" value="${attrs.tapLine}" />
 	        <j:set var="tapFile" value="${attrs.tapFile}" />
-	        <j:set var="tapIndent" value="${attrs.tapIndent}" /> 
 	        <j:set var="showOnlyFailures" value="${attrs.showOnlyFailures}" />
 	        <j:choose>
                 <j:when test="${it.isTestResult( tapLine )}">
-                	<j:set var="hide" value="false" /> 
+                <j:set var="hide" value="false" /> 
                 	<j:if test="${showOnlyFailures}">
             			<j:if test="${tapLine != null}">
 							<j:set var="testResult" value="${tapLine}" />
@@ -22,31 +21,35 @@
             		</j:if>
             		<j:if test="${hide == 'false'}">
 					    <tr>
-					        <tap:status testResult="${tapLine}" testIndent="${tapIndent}" />
+					        <tap:status testResult="${tapLine}" testIndent="${tapIndent}"/>
 					        <td width="65%">${tapLine.description}
-					        <!-- Comments diagnostics -->
-		                    <!-- tap:comments diagnostic="${tapLine.comments}" /-->
-						    <!-- YAML Diagnostics -->
-		                    <tap:yaml diagnostic="${tapLine.diagnostic}" tapFile="${tapFile}" />
-					        </td>					        
+					          <!-- Comments diagnostics -->
+	                          <!-- tap:comments diagnostic="${tapLine.comments}" /-->
+					          <!-- YAML Diagnostics -->
+	                         <tap:yaml diagnostic="${tapLine.diagnostic}" tapFile="${tapFile}" />	
+					         </td>					        
 					        <tap:directive directive="${tapLine.directive}" />
 					    </tr>
-					    
+						
+				        <j:forEach var="tapLine" items="${tapLine.subtest.tapLines}">	
+							<tap:testresult3 tapLine="${tapLine}" tapFile="${map.fileName}" tapIndent="${tapIndent+1}" showOnlyFailures="${it.showOnlyFailures}" />							
+						</j:forEach>
+					       
 	                </j:if>
 				</j:when>
-				<j:when  test="${it.isBailOut( tapLine )}">
+				<j:when  test="${it.isBailOut( testResult )}">
 				    <tr>
-                        <td class="red center" width="5%"><img src="/plugin/tap/icons/exclamation.png" alt="Bail out! ${tapLine.reason}" title="Bail out! ${tapLine.reason}" /></td>
+                        <td class="red center" width="5%"><img src="/plugin/tap/icons/exclamation.png" alt="Bail out! ${testResult.reason}" title="Bail out! ${testResult.reason}" /></td>
                         <td width="5%" class="center"> </td>
-                        <td width="65%"><span class="red_text bold">Bail out! ${tapLine.reason}</span></td>
+                        <td width="65%"><span class="red_text bold">Bail out! ${testResult.reason}</span></td>
                         <tap:directive directive="" />
                     </tr>
 				</j:when>
-				<j:when test="${it.isComment( tapLine ) and it.includeCommentDiagnostics}">
+				<j:when test="${it.isComment( testResult ) and it.includeCommentDiagnostics}">
                     <tr>
                         <td></td>
                         <td colspan='3'>
-                            # ${it.escapeHTML(tapLine.text)}<br/>
+                            # ${it.escapeHTML(testResult.text)}<br/>
                         </td>
                     </tr>
                 </j:when>

@@ -5,21 +5,44 @@
 
 	<j:choose>
 		<j:when test="${attrs.testResult != null}">
-			<j:set var="testResult" value="${attrs.testResult}" />
+		
 			<j:choose>
 				<j:when test="${testResult.directive != null and testResult.directive.directiveValue.toString() == 'SKIP'}">
-					<td class="yellow" width="5%"> </td>
+					<j:set var="ResultClass" value="yellow" />
 				</j:when>
 				<j:when test="${testResult.directive != null and testResult.directive.directiveValue.toString() == 'TODO'}">
-					<td class="cyan" width="5%"> </td>
+					<j:set var="ResultClass" value="cyan" />
 				</j:when>
-				<j:when test="${testResult.status.toString() == 'ok'}">
-					<td class="green" width="5%"> </td>
+				<j:when test="${testResult.status.toString() == 'ok'}">					
+					<j:set var="ResultClass" value="green" />
 				</j:when>
 				<j:otherwise>
-					<td class="red" width="5%"> </td>
+					<j:set var="ResultClass" value="red" />
 				</j:otherwise>
 			</j:choose>
+			
+			<j:set var="testResult" value="${attrs.testResult}" />
+			<j:set var="testIndent" value="${attrs.testIndent}" /> 
+			<j:choose>
+				<j:when test="${testIndent == '0'}">
+				<j:set var="isFirstLevel" value="${ResultClass}" /> 
+				</j:when>
+				<j:otherwise>
+				<j:set var="isFirstLevel" value="" /> 
+				</j:otherwise>
+			</j:choose>
+			<j:choose>
+			<j:when test="${testIndent == 0}">
+			    <j:set var="td_color" value="${ResultClass}" />
+			</j:when>
+			<j:otherwise>
+				<j:set var="td_color" value="" />
+			</j:otherwise>
+			</j:choose>
+			<td width="5%" class="${td_color}" style="height:100%; padding:0px;" >
+			<div class="${ResultClass}" style="height:100%; margin:0px; padding:0px; margin-left:${testIndent}em;'">${testResult.testNumber}</div>
+			
+			</td>
 		</j:when>
 		<j:otherwise>
 			<td width="5%">
