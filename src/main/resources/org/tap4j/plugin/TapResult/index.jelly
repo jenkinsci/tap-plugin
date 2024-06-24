@@ -2,18 +2,20 @@
 <j:jelly
     xmlns:j="jelly:core" 
     xmlns:st="jelly:stapler"
-	xmlns:d="jelly:define" 
-	xmlns:l="/lib/layout" 
-	xmlns:t="/lib/hudson"
-	xmlns:f="/lib/form" 
-	xmlns:i="jelly:fmt" 
+	xmlns:l="/lib/layout"
 	xmlns:tap="/org/tap4j/plugin/tags">
 	<l:layout norefresh="true" css="/plugin/tap/css/tap.css">
 		<st:include it="${it.owner}" page="sidepanel.jelly" />
 		<l:main-panel>
 			
 			<h1>TAP Extended Test Results</h1>
-			
+			<script src="${rootURL}/plugin/tap/interactive.js"/>
+			<script>
+				<![CDATA[
+				//to preset state of buttons (which will corresponmd proeprly to correctly missing elements)
+				window.addEventListener('load', extendedTapsetInteractives().fixButtons, false);
+				]]>
+			</script>
 			<j:choose>
 				<j:when test="${it.isEmptyTestSet()}">
 					<p>Empty test set</p>
@@ -21,11 +23,130 @@
 				<j:otherwise>
 				    ${it.updateStats()}
 				    <table width='100%'>
-				        <tr>
-				            <td width='5%'>${it.testSets.size()} files</td>
-				            <td>${it.getTotal()} tests, ${it.passed} ok, ${it.failed} not ok, ${it.skipped} skipped, ${it.toDo} ToDo, ${it.bailOuts} Bail Out!</td>
-				        </tr>
-				    </table>
+						<tr>
+							<td width='5%'>${it.testSets.size()} files</td>
+							<td>
+								${it.getTotal()} tests,
+								${it.passed} ok,
+								${it.failed} not ok,
+								${it.skipped} skipped,
+								${it.toDo} ToDo
+								<j:if test="${it.includeCommentDiagnostics}">
+								${it.getComments()} comments
+								</j:if>
+								${it.bailOuts} Bail Out!
+							</td>
+							<td>
+							</td>
+						</tr>
+					    <tr>
+							<td>
+								invert:
+							</td>
+							<td>
+								<span class="tapItooltip">
+									<span class='tapIclick tapseExtendedReleased'
+										  id='okTestsButton'
+										  onclick='extendedTapsetInteractives().showHideOk()' >
+										ok tests
+									</span>
+									<span class="tapItooltiptext">click to show/hide ${it.passed} passed tests</span>
+								</span>
+								<span class="tapItooltip">
+									<span class='tapIclick tapseExtendedReleased'
+										  id='notOkTestsButton'
+										  onclick='extendedTapsetInteractives().showHideNotOk()'>
+										not ok tests
+									</span>
+									<span class="tapItooltiptext">click to show/hide ${it.failed} failed tests</span>
+								</span>
+								<span class="tapItooltip">
+									<span class='tapIclick tapseExtendedReleased'
+										  id='skippedTestsButton'
+										  onclick='extendedTapsetInteractives().showHideSkips()'>
+										skipped tests
+									</span>
+									<span class="tapItooltiptext">click to show/hide ${it.skipped} skipped tests</span>
+								</span>
+								<span class="tapItooltip">
+									<span class='tapIclick tapseExtendedReleased'
+										  id='todoTestsButton'
+										  onclick='extendedTapsetInteractives().showHideTodos()'>
+										ToDo tests
+									</span>
+									<span class="tapItooltiptext">click to show/hide ${it.toDo} ToDo tests</span>
+								</span>
+								<j:if test="${it.includeCommentDiagnostics}">
+									<span class="tapItooltip">
+										<span class='tapIclick tapseExtendedReleased'
+											  id='commentsTestsButton'
+											  onclick='extendedTapsetInteractives().showHideComments()'>
+											comments
+										</span>
+										<span class="tapItooltiptext">click to show/hide ${it.getComments()} comments</span>
+									</span>
+								</j:if>
+								<span class="tapItooltip">
+									<span class='tapIclick tapseExtendedReleased'
+										  id='bailedTestsButton'
+									      onclick='extendedTapsetInteractives().showHideBails()'>
+										bailed out tests
+									</span>
+									<span class="tapItooltiptext">click to show/hide ${it.bailOuts} bailed out tests</span>
+								</span>
+								<span class="tapItooltip">
+									<span class='tapIclick tapseExtendedReleased'
+										  id='detailRowsTestsButton'
+										  onclick='extendedTapsetInteractives().showHideDetailsRows()'>
+										details row
+									</span>
+									<span class="tapItooltiptext">click to show/hide whole detail rows. Note it is independent on test header</span>
+								</span>
+								<span class="tapItooltip">
+									<span class='tapIclick tapseExtendedReleased'
+										  id='detailsTestsButton'
+										  onclick='extendedTapsetInteractives().showHideDetails()'>
+										details content
+									</span>
+									<span class="tapItooltiptext">click to show/hide individual detail messages</span>
+								</span>
+								<span class="tapItooltip">
+									<span class='tapIclick tapseExtendedReleased'
+										  id='plusMinusTestsButton'
+										  onclick='extendedTapsetInteractives().showHideInline("jsPM")'>
+										+/-
+									</span>
+									<span class="tapItooltiptext">
+										click to show/hide the expandable +/- element
+									</span>
+								</span>
+							</td>
+							<td>
+								<i class="jsPM">preset-views:
+									<span class="tapItooltip">
+										<u class='tapIclick' onclick='extendedTapsetInteractives().showFailed()'>failed</u><j:whitespace> / </j:whitespace>
+										<span class="tapItooltiptext">list only failed tests (without output)</span>
+									</span>
+									<span class="tapItooltip">
+										<u class='tapIclick' onclick='extendedTapsetInteractives().showFailedDetails()'>failed details</u><j:whitespace> / </j:whitespace>
+										<span class="tapItooltiptext">show only failed tests with all output</span>
+									</span>
+									<span class="tapItooltip">
+										<u class='tapIclick' onclick='extendedTapsetInteractives().hideDetails()'>no details</u><j:whitespace> / </j:whitespace>
+										<span class="tapItooltiptext">hide details of each row</span>
+									</span>
+									<span class="tapItooltip">
+										<u class='tapIclick' onclick='extendedTapsetInteractives().showNothing()'>nothing</u><j:whitespace> / </j:whitespace>
+										<span class="tapItooltiptext">hide all</span>
+									</span>
+									<span class="tapItooltip">
+										<u class='tapIclick' onclick='extendedTapsetInteractives().showAll()'>all</u>
+										<span class="tapItooltiptext">show all</span>
+									</span>
+								</i>
+							</td>
+						</tr>
+					</table>
 				    
 				    <j:if test="${it.showOnlyFailures}">
 				    	<p><strong>Note:</strong> Displaying only failures</p>
