@@ -58,17 +58,8 @@ public class ExtendedJavascriptActionsTest {
     @Rule
     public JenkinsRule j = new JenkinsRule();
 
-    @Test
-    /**
-     * This tests chexks that there is no JS exception if tap fie contains no tests
-     */
-    public void checkNoTestDoNotFault() throws IOException, SAXException, ExecutionException, InterruptedException {
-        final FreeStyleProject project = j.createFreeStyleProject();
-        String tapFileName = "suite2.tap";
-        final Shell shell = new Shell("echo \"\" > " + tapFileName + "\n");
-        project.getBuildersList().add(shell);
-
-        final TapPublisher tapPublisher = new TapPublisher(
+    private static TapPublisher getSimpleTapPublisher() {
+        return new TapPublisher(
                 "**/*.tap",
                 true,
                 true,
@@ -86,8 +77,20 @@ public class ExtendedJavascriptActionsTest {
                 true,
                 true
         );
-        project.getPublishersList().add(tapPublisher);
+    }
 
+    @Test
+    /**
+     * This tests chexks that there is no JS exception if tap fie contains no tests
+     */
+    public void checkNoTestDoNotFault() throws IOException, SAXException, ExecutionException, InterruptedException {
+        final FreeStyleProject project = j.createFreeStyleProject();
+        String tapFileName = "suite2.tap";
+        final Shell shell = new Shell("echo \"\" > " + tapFileName + "\n");
+        project.getBuildersList().add(shell);
+
+        final TapPublisher tapPublisher = getSimpleTapPublisher();
+        project.getPublishersList().add(tapPublisher);
         project.save();
 
         try (final JenkinsRule.WebClient wc = j.createWebClient()) {
@@ -131,27 +134,8 @@ public class ExtendedJavascriptActionsTest {
                 "not ok 4 - " + testIds[3] + "# TODO: not written yet" +
                 "\" > " + tapFileName + "\n");
         project.getBuildersList().add(shell);
-
-        final TapPublisher tapPublisher = new TapPublisher(
-                "**/*.tap",
-                true,
-                true,
-                true,
-                true,
-                true,
-                true,
-                true,
-                true,
-                true,
-                true,
-                false,
-                true,
-                true,
-                true,
-                true
-        );
+        final TapPublisher tapPublisher = getSimpleTapPublisher();
         project.getPublishersList().add(tapPublisher);
-
         project.save();
 
         try (final JenkinsRule.WebClient wc = j.createWebClient()) {
@@ -178,4 +162,5 @@ public class ExtendedJavascriptActionsTest {
             }
         }
     }
+
 }
