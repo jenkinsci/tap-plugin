@@ -40,8 +40,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Check that JS and links on extended page works
@@ -230,6 +229,27 @@ public class ExtendedJavascriptActionsTest {
                 assertEquals("class at row " + x, classes[x], jsClazzValue);
                 HtmlTableRow tableRow = (HtmlTableRow) row;
                 assertTrue("the element must be visible", tableRow.isDisplayed());
+            }
+            List mainViews = page.getByXPath("//u[@class='tapIclick']");
+            assertEquals("There should be four tests loaded", 5, mainViews.size());
+            HtmlUnderlined clickable = (HtmlUnderlined) (mainViews.get(0));
+            clickable.click();
+            List tapRowsAfter1click = page.getByXPath("//table[@class='tap']//tr");
+            assertEquals("There should be four tests loaded", 9, tapRowsAfter1click.size());
+            cellHead = (DomNode) tapRowsAfter1click.get(0);
+            assertEquals("header have no atts", 0, cellHead.getAttributes().getLength());
+            for (int x = 1; x < 8; x++) {
+                DomNode row = (DomNode) tapRowsAfter1click.get(x);
+                String s = row.asXml();
+                Node jsclazz = row.getAttributes().getNamedItem("class");
+                String jsClazzValue = jsclazz.getTextContent();
+                assertEquals("class at row " + x, classes[x], jsClazzValue);
+                HtmlTableRow tableRow = (HtmlTableRow) row;
+                if (classes[x].equals("test_not_ok")) {
+                    assertTrue("the element must be visible", tableRow.isDisplayed());
+                } else {
+                    assertFalse("the element must NOT be visible", tableRow.isDisplayed());
+                }
             }
         }
     }
