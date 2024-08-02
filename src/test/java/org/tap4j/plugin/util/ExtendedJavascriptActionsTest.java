@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.tap4j.plugin.TapPublisher;
+import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -159,6 +160,75 @@ public class ExtendedJavascriptActionsTest {
                 assertTrue("href must contain id", href.contains("_" + (x + 1) + "_"));
                 assertTrue("href must contain test id", href.contains(testIds[x].replace(" ", "_")));
                 assertEquals("href should match following convention", ("#" + tapFileName + "_" + (x + 1) + "_-_" + testIds[x].replace(" ", "_") + "!").replaceAll("_+", "_"), href);
+            }
+        }
+    }
+
+    @Test
+    @Issue("73483")
+    /**
+     * This tests feature where each test id is pointable by UNIQUE anchor and the acnhor is provided by it
+     */
+    public void checkControlIdsExists() throws IOException, SAXException, ExecutionException, InterruptedException {
+        final FreeStyleProject project = j.createFreeStyleProject();
+        String tapFileName = "suite3.tap";
+        String[] testIds = {
+                "Input file opened",
+                " First line of the input valid.",
+                "Read the rest of the file",
+                "Summarized correctly1 ", //this trailing space is important, it propagates to id
+                "Summarized correctly2 ", //this trailing space is important, it propagates to id
+                "Summarized correctly3 ", //this trailing space is important, it propagates to id
+                "hi no space1",
+                "hi no space2"
+
+        };
+        final Shell shell = new Shell("echo \"1..8\n" +
+                "ok 1 - " + testIds[0] + "\n" +
+                "not ok 2 - " + testIds[1] + "\n" +
+                "not ok 3 - " + testIds[2] + "# TODO\n" +
+                "not ok 4 - " + testIds[3] + "# skip\n" +
+                "#cmnt3\n" +
+                "ok 5 - " + testIds[4] + "# TODO Not written yet\n" +
+                "ok 6 - " + testIds[5] + "# skip written yet\n" +
+                "Bail out!\n" +
+                "Bail out! with reason\n" +
+                "not ok 7 -" + testIds[6] + "\n" +
+                "ok 8 -" + testIds[7] + "\n" +
+                "\" > " + tapFileName + "\n");
+        String[] classes = {
+                "", //header
+                "test_ok",
+                "test_not_ok",
+                "test_not_ok_TODO",
+                "test_not_ok_SKIP",
+                "test_ok_TODO",
+                "test_ok_SKIP",
+                "test_not_ok",
+                "test_ok",
+
+        };
+        project.getBuildersList().add(shell);
+        final TapPublisher tapPublisher = getSimpleTapPublisher();
+        project.getPublishersList().add(tapPublisher);
+        project.save();
+
+        try (final JenkinsRule.WebClient wc = j.createWebClient()) {
+            wc.setThrowExceptionOnFailingStatusCode(false);
+            Future<?> f = project.scheduleBuild2(0);
+            Run<?, ?> build = (Run<?, ?>) f.get();
+            HtmlPage page = wc.goTo("job/" + project.getName() + "/" + build.getNumber() + "/tapResults/");
+            List tapRows = page.getByXPath("//table[@class='tap']//tr");
+            assertEquals("There should be four tests loaded", 9, tapRows.size());
+            DomNode cellHead = (DomNode) tapRows.get(0);
+            assertEquals("header have no atts", 0, cellHead.getAttributes().getLength());
+            for (int x = 1; x < 8; x++) {
+                DomNode row = (DomNode) tapRows.get(x);
+                String s = row.asXml();
+                Node jsclazz = row.getAttributes().getNamedItem("class");
+                String jsClazzValue = jsclazz.getTextContent();
+                assertEquals("class at row " + x, classes[x], jsClazzValue);
+
             }
         }
     }
