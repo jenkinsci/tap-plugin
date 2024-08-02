@@ -228,7 +228,8 @@ public class ExtendedJavascriptActionsTest {
                 Node jsclazz = row.getAttributes().getNamedItem("class");
                 String jsClazzValue = jsclazz.getTextContent();
                 assertEquals("class at row " + x, classes[x], jsClazzValue);
-
+                HtmlTableRow tableRow = (HtmlTableRow) row;
+                assertTrue("the element must be visible", tableRow.isDisplayed());
             }
         }
     }
