@@ -328,6 +328,9 @@ extendedTapsetInteractives = function () {
     }
 
     function setButtonByState(button, state) {
+      if (button == null) {
+        return;
+      }
       if (state == -1) {
         button.classList.remove("tapseExtendedMixed")
         button.classList.remove("tapseExtendedReleased")
