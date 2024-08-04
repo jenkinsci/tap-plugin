@@ -279,6 +279,14 @@ public class TapResult implements ModelObject, Serializable {
         return this.bailOuts;
     }
 
+    public int getComments() {
+        int count = 0;
+        for (TestSetMap testSet: testSets) {
+            count += testSet.getTestSet().getComments().size();
+        }
+        return count;
+    }
+
     public int getTotal() {
         return this.total;
     }
@@ -291,10 +299,11 @@ public class TapResult implements ModelObject, Serializable {
      * Called from TapResult/index.jelly
      * @param tapFile location of TAP file
      * @param diagnostic TAP diagnostics
+     * @param tapLine TAP origin of the diagnsotic table
      * @return diagnostic table
      */
-    public String createDiagnosticTable(String tapFile, Map<String, Object> diagnostic) {
-        return DiagnosticUtil.createDiagnosticTable(tapFile, diagnostic);
+    public String createDiagnosticTable(String tapFile, Map<String, Object> diagnostic, TestResult tapLine) {
+        return DiagnosticUtil.createDiagnosticTable(tapFile, diagnostic, tapLine);
     }
 
     /**
@@ -422,4 +431,25 @@ public class TapResult implements ModelObject, Serializable {
         }
         return null;
     }
+
+    //Used in jelly
+    public String getClazz(BailOut tapLine) {
+        return "_bailout_";
+    }
+
+    //Used in jelly
+    public String getClazz(Comment tapLine) {
+        return "_comment_";
+    }
+
+    //Used in jelly
+    public String getClazz(TestResult tapLine) {
+        return Util.getClazz("test_", tapLine);
+    }
+
+    //Used in jelly
+    public String getId(TestResult tapLine, String file) {
+        return  Util.getId("", tapLine, file);
+    }
+
 }
