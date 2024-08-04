@@ -49,7 +49,7 @@ import static org.junit.Assert.assertTrue;
  * https://issues.jenkins.io/browse/JENKINS-73484
  * <p>
  * Debug from inde may not work, due to interactive.js not loaded. If hit, do mvn clean install from cmdline. If nto fixed, run
- * mvn   -Dtest=ExtendedJavascriptActionsStaticTests#checkLinkToTestExists -Dmaven.surefire.debug test
+ * mvn   -Dtest=ExtendedJavascriptActionsStaticTests#checkControlIdsExists -Dmaven.surefire.debug test
  * and attach ide's remote dbeug to 5005
  *
  * @since 2.X.Y
@@ -72,16 +72,27 @@ public class ExtendedJavascriptActionsStaticTests {
     };
     public static final String[] classes = {
             "", //header
+            "_comment_",
+            "_comment_",
+            "_comment_",
             "test_ok",
+            "tr_details_ok",
             "test_not_ok",
+            "tr_details_not_ok",
             "test_not_ok_TODO",
             "test_not_ok_SKIP",
+            "_comment_",
             "test_ok_TODO",
+            "tr_details_ok_TODO",
             "test_ok_SKIP",
+            "_bailout_",
+            "_bailout_",
             "test_not_ok",
+            "tr_details_not_ok",
             "test_ok",
 
     };
+
 
     public static TapPublisher getSimpleTapPublisher() {
         return new TapPublisher(
@@ -98,50 +109,58 @@ public class ExtendedJavascriptActionsStaticTests {
                 true,
                 false,
                 true,
-                true,
+                false,
                 true,
                 true
         );
     }
 
     public static Shell getShell(String tapFileName) {
-        return new Shell("echo \"1..8\n" +
+        return new Shell("echo \"" +
+                "# cmnt01\n" +
+                "# cmnt02\n" +
+                "# cmnt03\n" +
+                "1..8\n" +
                 "ok 1 - " + testIds[0] + "\n" +
+                "  ---\n" +
                 "    detailid1: detail1\n" +
                 "    detailid2: detail2\n" +
+                "  ...\n" +
                 "not ok 2 - " + testIds[1] + "\n" +
+                "  ---\n" +
                 "    detailid1: detail3\n" +
                 "    detailid2: detail4\n" +
+                "  ...\n" +
                 "not ok 3 - " + testIds[2] + "# TODO\n" +
+                "not ok 4 - " + testIds[3] + "# skip\n" +
+                "    detailid1: incorrect\n" +
+                "    detailid2: incorrect\n" +
+                "#in results cmnt\n" +
+                "ok 5 - " + testIds[4] + "# TODO Not written yet\n" +
+                "  ---\n" +
                 "    detailid1: detail5\n" +
                 "    detailid2: detail6\n" +
-                "not ok 4 - " + testIds[3] + "# skip\n" +
-                "    detailid1: detail7\n" +
-                "    detailid2: detail8\n" +
-                "#cmnt3\n" +
-                "ok 5 - " + testIds[4] + "# TODO Not written yet\n" +
-                "    detailid1: detail9\n" +
-                "    detailid2: detail10\n" +
+                "  ...\n" +
                 "ok 6 - " + testIds[5] + "# skip written yet\n" +
-                "    detailid1: detail11\n" +
-                "    detailid2: detail12\n" +
                 "Bail out!\n" +
                 "Bail out! with reason\n" +
                 "not ok 7 -" + testIds[6] + "\n" +
-                "    detailid1: detail13\n" +
-                "    detailid2: detail14\n" +
+                "  ---\n" +
+                "    detailid1: detail7\n" +
+                "    detailid2: detail8\n" +
+                "  ...\n" +
                 "ok 8 -" + testIds[7] + "\n" +
-                "    detailid1: detail15\n" +
-                "    detailid2: detail16\n" +
+                "    detailid1: incorrect\n" +
+                "    detailid2: incorrect\n" +
                 "\" > " + tapFileName + "\n");
     }
 
     public static void checkInteractiveJs(HtmlPage page) {
         List scripts = page.getByXPath("//script");
         assertTrue("At least one script must be there", scripts.size() > 0);
-        for(Object futureScript: scripts) {
+        for (Object futureScript : scripts) {
             HtmlScript scrip = (HtmlScript) futureScript;
-            if (scrip.getSrcAttribute().endsWith("/plugin/tap/interactive.js")){
+            if (scrip.getSrcAttribute().endsWith("/plugin/tap/interactive.js")) {
                 return;
             }
         }
@@ -251,19 +270,36 @@ public class ExtendedJavascriptActionsStaticTests {
             Future<?> f = project.scheduleBuild2(0);
             Run<?, ?> build = (Run<?, ?>) f.get();
             HtmlPage page = wc.goTo("job/" + project.getName() + "/" + build.getNumber() + "/tapResults/");
+            String s1 = page.asXml();
             checkInteractiveJs(page);
-            List tapRows = page.getByXPath("//table[@class='tap']//tr");
-            assertEquals("There should be four tests loaded", 9, tapRows.size());
-            DomNode cellHead = (DomNode) tapRows.get(0);
+            List tapMainRows = page.getByXPath("//table[@class='tap']/tbody/tr"); //there are also nested rows
+            //19=1header+3coments on top+1comment in middle+8tests 2bailedout lines + 4 comment rows (each detail is subrow in subtable)
+            int totalRows = 1 + 3 + 1 + 8 + 2 + 4;
+            assertEquals("There should be four tests loaded", totalRows, tapMainRows.size());
+            DomNode cellHead = (DomNode) tapMainRows.get(0);
             assertEquals("header have no atts", 0, cellHead.getAttributes().getLength());
-            for (int x = 1; x < 8; x++) {
-                DomNode row = (DomNode) tapRows.get(x);
-                String s = row.asXml();
+            for (int x = 1; x < totalRows; x++) {
+                DomNode row = (DomNode) tapMainRows.get(x);
+                String s2 = row.asXml();
                 Node jsclazz = row.getAttributes().getNamedItem("class");
                 String jsClazzValue = jsclazz.getTextContent();
                 assertEquals("class at row " + x, classes[x], jsClazzValue);
                 HtmlTableRow tableRow = (HtmlTableRow) row;
                 assertTrue("the element must be visible", tableRow.isDisplayed());
+            }
+            List detailsRows = page.getByXPath("//table[@class='tap']/tbody/tr//tr");
+            //4 rows have valid detail. Each have 2 details. Each
+            assertEquals("There should be four tests loaded", 8, detailsRows.size());
+            for (int x = 0; x < detailsRows.size(); x++) {
+                int idCounter = (x % 2) + 1;
+                HtmlTableRow tableRow = (HtmlTableRow) (detailsRows.get(x));
+                HtmlTableCell nameCell1 = tableRow.getCell(1);
+                assertEquals("detailid" + idCounter + " +/-", nameCell1.getTextContent());
+                HtmlTableCell nameCell2 = tableRow.getCell(2);
+                String nameCelid2 = nameCell2.getAttribute("id");
+                String nameCellClazz2 = nameCell2.getAttribute("class");
+                assertEquals("detail_body", nameCellClazz2);
+                assertEquals("detail" + (x + 1), nameCell2.getTextContent());
             }
         }
     }
