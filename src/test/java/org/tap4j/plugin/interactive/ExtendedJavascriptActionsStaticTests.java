@@ -36,9 +36,13 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -301,6 +305,93 @@ public class ExtendedJavascriptActionsStaticTests {
                 assertEquals("detail_body", nameCellClazz2);
                 assertEquals("detail" + (x + 1), nameCell2.getTextContent());
             }
+        }
+    }
+
+    @Test
+    @Issue("73483")
+    /**
+     * this test is chekcing that all ids in generated file are indeed unique
+     */
+    public void testUniqueIds() throws IOException, SAXException, ExecutionException, InterruptedException {
+        final FreeStyleProject project = statJRule.createFreeStyleProject();
+        String tapFileName = "suite2.tap";
+        project.getBuildersList().add(getShell(tapFileName));
+        final TapPublisher tapPublisher = getSimpleTapPublisher();
+        project.getPublishersList().add(tapPublisher);
+        project.save();
+        List<String> allIds = new ArrayList<>();
+        try (final JenkinsRule.WebClient wc = statJRule.createWebClient()) {
+            wc.setThrowExceptionOnFailingStatusCode(false);
+            Future<?> f = project.scheduleBuild2(0);
+            Run<?, ?> build = (Run<?, ?>) f.get();
+            HtmlPage page = wc.goTo("job/" + project.getName() + "/" + build.getNumber() + "/tapResults/");
+            String s1 = page.asXml();
+            checkInteractiveJs(page);
+            List tapMainRows = page.getByXPath("//table[@class='tap']/tbody/tr"); //there are also nested rows
+            int totalRows = 19;
+            assertEquals("There should be four tests loaded", totalRows, tapMainRows.size());
+            DomNode cellHead = (DomNode) tapMainRows.get(0);
+            assertEquals("header have no atts", 0, cellHead.getAttributes().getLength());
+            for (int x = 1; x < totalRows; x++) {
+                DomNode row = (DomNode) tapMainRows.get(x);
+                Node jsId = row.getAttributes().getNamedItem("id");
+                if (jsId != null) {
+                    String jsIdValue = jsId.getTextContent();
+                    allIds.add(jsIdValue);
+                }
+            }
+            List detailsRows = page.getByXPath("//table[@class='tap']/tbody/tr//tr");
+            //4 rows have valid detail. Each have 2 details. Each
+            assertEquals("There should be four tests loaded", 8, detailsRows.size());
+            for (int x = 0; x < detailsRows.size(); x++) {
+                HtmlTableRow tableRow = (HtmlTableRow) (detailsRows.get(x));
+                String rowId = tableRow.getId();
+                allIds.add(rowId);
+                HtmlTableCell nameCell2 = tableRow.getCell(2);
+                String nameCelid2 = nameCell2.getAttribute("id");
+                allIds.add(nameCelid2);
+            }
+            allIds = allIds.stream().filter(a -> {
+                return !a.isEmpty();
+            }).collect(Collectors.toList());
+            Set uniqueIds = new HashSet(allIds);
+            assertEquals("all ids must be unique", allIds.size(), uniqueIds.size());
+            List allPlusMinus = page.getByXPath("//u[@class='jsPM']");
+            List allNamedHrefs = page.getByXPath("//td/a[@name]");
+            List<String> unusedIds = new ArrayList<>(allIds);
+            List pmUnmatched = new ArrayList(allPlusMinus);
+            List pmMatched = new ArrayList();
+            List namedHrefsUnmatched = new ArrayList(allNamedHrefs);
+            List namedHrefsMatched = new ArrayList();
+            for (String id : allIds) {
+                for (Object pm : allPlusMinus) {
+                    HtmlElement ujp = (HtmlElement) pm;
+                    String clickM = ujp.getOnClickAttribute();
+                    String parameter = clickM.replaceAll(".*\\(\"", "").replaceAll("\"\\).*", "");
+                    if (parameter.equals(id)) {
+                        pmUnmatched.remove(pm);
+                        pmMatched.add(pm);
+                        unusedIds.remove(id);
+                    }
+                }
+                for (Object pm : allNamedHrefs) {
+                    HtmlElement ujp = (HtmlElement) pm;
+                    StringBuilder name = new StringBuilder(ujp.getAttribute("name"));
+                    String nwname = new StringBuilder(
+                            name.reverse().toString().replaceFirst("!", "")
+                    ).reverse().toString();
+                    if (nwname.equals(id)) {
+                        namedHrefsUnmatched.remove(pm);
+                        namedHrefsMatched.add(pm);
+                        unusedIds.remove(id);
+                    }
+                }
+            }
+            assertEquals("all ids were used", 0, unusedIds.size());
+            assertEquals("all hrefs were used", 0, namedHrefsUnmatched.size());
+            /*there are four rows without details, so thiers +/- shows nothing*/
+            assertEquals("all +/- with rows were used", 4, pmUnmatched.size());
         }
     }
 }
