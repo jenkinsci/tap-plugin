@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.tap4j.plugin.util;
+package org.tap4j.plugin.interactive;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.Run;
