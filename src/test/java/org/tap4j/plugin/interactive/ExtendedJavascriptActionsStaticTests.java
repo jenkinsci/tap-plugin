@@ -41,24 +41,23 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Check that JS and links on extended page works
+ * Check that JS and links on extended page contains correct symbols
  * https://issues.jenkins.io/browse/JENKINS-73483
  * https://issues.jenkins.io/browse/JENKINS-73484
  * <p>
  * Debug from inde may not work, due to interactive.js not loaded. If hit, do mvn clean install from cmdline. If nto fixed, run
- * mvn   -Dtest=ExtendedJavascriptActionsTest#checkLinkToTestExists -Dmaven.surefire.debug test
+ * mvn   -Dtest=ExtendedJavascriptActionsStaticTests#checkLinkToTestExists -Dmaven.surefire.debug test
  * and attach ide's remote dbeug to 5005
  *
  * @since 2.X.Y
  */
-public class ExtendedJavascriptActionsTest {
+public class ExtendedJavascriptActionsStaticTests {
 
     @Rule
-    public JenkinsRule j = new JenkinsRule();
+    public JenkinsRule statJRule = new JenkinsRule();
 
     public static final String[] testIds = {
             "Input file opened",
@@ -84,7 +83,7 @@ public class ExtendedJavascriptActionsTest {
 
     };
 
-    private static TapPublisher getSimpleTapPublisher() {
+    public static TapPublisher getSimpleTapPublisher() {
         return new TapPublisher(
                 "**/*.tap",
                 true,
@@ -154,7 +153,7 @@ public class ExtendedJavascriptActionsTest {
      * This tests checks that there is no JS exception if tap fie contains no tests
      */
     public void checkNoTestDoNotFault() throws IOException, SAXException, ExecutionException, InterruptedException {
-        final FreeStyleProject project = j.createFreeStyleProject();
+        final FreeStyleProject project = statJRule.createFreeStyleProject();
         String tapFileName = "suite1.tap";
         final Shell shell = new Shell("echo \"\" > " + tapFileName + "\n");
         project.getBuildersList().add(shell);
@@ -163,7 +162,7 @@ public class ExtendedJavascriptActionsTest {
         project.getPublishersList().add(tapPublisher);
         project.save();
 
-        try (final JenkinsRule.WebClient wc = j.createWebClient()) {
+        try (final JenkinsRule.WebClient wc = statJRule.createWebClient()) {
             wc.setThrowExceptionOnFailingStatusCode(false);
             Future<?> f = project.scheduleBuild2(0);
             Run<?, ?> build = (Run<?, ?>) f.get();
@@ -183,7 +182,7 @@ public class ExtendedJavascriptActionsTest {
      * This tests feature where each test id is pointable by UNIQUE anchor and the acnhor is provided by it
      */
     public void checkLinkToTestExists() throws IOException, SAXException, ExecutionException, InterruptedException {
-        final FreeStyleProject project = j.createFreeStyleProject();
+        final FreeStyleProject project = statJRule.createFreeStyleProject();
         String tapFileName = "suite1.tap";
         String[] testIds = {
                 "Input file opened",
@@ -208,7 +207,7 @@ public class ExtendedJavascriptActionsTest {
         project.getPublishersList().add(tapPublisher);
         project.save();
 
-        try (final JenkinsRule.WebClient wc = j.createWebClient()) {
+        try (final JenkinsRule.WebClient wc = statJRule.createWebClient()) {
             wc.setThrowExceptionOnFailingStatusCode(false);
             Future<?> f = project.scheduleBuild2(0);
             Run<?, ?> build = (Run<?, ?>) f.get();
@@ -240,14 +239,14 @@ public class ExtendedJavascriptActionsTest {
      * this test checks that all is ivisble at start and that all classes needed forshow/hide actions are there
      */
     public void checkControlIdsExists() throws IOException, SAXException, ExecutionException, InterruptedException {
-        final FreeStyleProject project = j.createFreeStyleProject();
+        final FreeStyleProject project = statJRule.createFreeStyleProject();
         String tapFileName = "suite2.tap";
         project.getBuildersList().add(getShell(tapFileName));
         final TapPublisher tapPublisher = getSimpleTapPublisher();
         project.getPublishersList().add(tapPublisher);
         project.save();
 
-        try (final JenkinsRule.WebClient wc = j.createWebClient()) {
+        try (final JenkinsRule.WebClient wc = statJRule.createWebClient()) {
             wc.setThrowExceptionOnFailingStatusCode(false);
             Future<?> f = project.scheduleBuild2(0);
             Run<?, ?> build = (Run<?, ?>) f.get();
@@ -268,48 +267,4 @@ public class ExtendedJavascriptActionsTest {
             }
         }
     }
-
-    @Test
-    @Issue("73483")
-    /**
-     * this test is checking that preset views to they job in hiding/showing proepr elements
-     */
-    public void testPresetViewsWorks() throws IOException, SAXException, ExecutionException, InterruptedException {
-        final FreeStyleProject project = j.createFreeStyleProject();
-        String tapFileName = "suite2.tap";
-        project.getBuildersList().add(getShell(tapFileName));
-        final TapPublisher tapPublisher = getSimpleTapPublisher();
-        project.getPublishersList().add(tapPublisher);
-        project.save();
-
-        try (final JenkinsRule.WebClient wc = j.createWebClient()) {
-            wc.setThrowExceptionOnFailingStatusCode(false);
-            Future<?> f = project.scheduleBuild2(0);
-            Run<?, ?> build = (Run<?, ?>) f.get();
-            HtmlPage page = wc.goTo("job/" + project.getName() + "/" + build.getNumber() + "/tapResults/");
-            checkInteractiveJs(page);
-            List mainViews = page.getByXPath("//u[@class='tapIclick']");
-            assertEquals("There should be four tests loaded", 5, mainViews.size());
-            HtmlUnderlined clickable = (HtmlUnderlined) (mainViews.get(0));
-            clickable.click();
-            List tapRowsAfter1click = page.getByXPath("//table[@class='tap']//tr");
-            assertEquals("There should be four tests loaded", 9, tapRowsAfter1click.size());
-            DomNode cellHead = (DomNode) tapRowsAfter1click.get(0);
-            assertEquals("header have no atts", 0, cellHead.getAttributes().getLength());
-            for (int x = 1; x < 8; x++) {
-                DomNode row = (DomNode) tapRowsAfter1click.get(x);
-                String s = row.asXml();
-                Node jsclazz = row.getAttributes().getNamedItem("class");
-                String jsClazzValue = jsclazz.getTextContent();
-                assertEquals("class at row " + x, classes[x], jsClazzValue);
-                HtmlTableRow tableRow = (HtmlTableRow) row;
-                if (classes[x].equals("test_not_ok")) {
-                    assertTrue("the element must be visible", tableRow.isDisplayed());
-                } else {
-                    assertFalse("the element must NOT be visible", tableRow.isDisplayed());
-                }
-            }
-        }
-    }
-
 }
