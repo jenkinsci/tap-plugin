@@ -40,7 +40,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Check that JS and links on extended page works
@@ -57,6 +59,30 @@ public class ExtendedJavascriptActionsTest {
 
     @Rule
     public JenkinsRule j = new JenkinsRule();
+
+    public static final String[] testIds = {
+            "Input file opened",
+            " First line of the input valid.",
+            "Read the rest of the file",
+            "Summarized correctly1 ", //this trailing space is important, it propagates to id
+            "Summarized correctly2 ", //this trailing space is important, it propagates to id
+            "Summarized correctly3 ", //this trailing space is important, it propagates to id
+            "hi no space1",
+            "hi no space2"
+
+    };
+    public static final String[] classes = {
+            "", //header
+            "test_ok",
+            "test_not_ok",
+            "test_not_ok_TODO",
+            "test_not_ok_SKIP",
+            "test_ok_TODO",
+            "test_ok_SKIP",
+            "test_not_ok",
+            "test_ok",
+
+    };
 
     private static TapPublisher getSimpleTapPublisher() {
         return new TapPublisher(
@@ -79,13 +105,57 @@ public class ExtendedJavascriptActionsTest {
         );
     }
 
+    public static Shell getShell(String tapFileName) {
+        return new Shell("echo \"1..8\n" +
+                "ok 1 - " + testIds[0] + "\n" +
+                "    detailid1: detail1\n" +
+                "    detailid2: detail2\n" +
+                "not ok 2 - " + testIds[1] + "\n" +
+                "    detailid1: detail3\n" +
+                "    detailid2: detail4\n" +
+                "not ok 3 - " + testIds[2] + "# TODO\n" +
+                "    detailid1: detail5\n" +
+                "    detailid2: detail6\n" +
+                "not ok 4 - " + testIds[3] + "# skip\n" +
+                "    detailid1: detail7\n" +
+                "    detailid2: detail8\n" +
+                "#cmnt3\n" +
+                "ok 5 - " + testIds[4] + "# TODO Not written yet\n" +
+                "    detailid1: detail9\n" +
+                "    detailid2: detail10\n" +
+                "ok 6 - " + testIds[5] + "# skip written yet\n" +
+                "    detailid1: detail11\n" +
+                "    detailid2: detail12\n" +
+                "Bail out!\n" +
+                "Bail out! with reason\n" +
+                "not ok 7 -" + testIds[6] + "\n" +
+                "    detailid1: detail13\n" +
+                "    detailid2: detail14\n" +
+                "ok 8 -" + testIds[7] + "\n" +
+                "    detailid1: detail15\n" +
+                "    detailid2: detail16\n" +
+                "\" > " + tapFileName + "\n");
+    }
+
+    public static void checkInteractiveJs(HtmlPage page) {
+        List scripts = page.getByXPath("//script");
+        assertTrue("At least one script must be there", scripts.size() > 0);
+        for(Object futureScript: scripts) {
+            HtmlScript scrip = (HtmlScript) futureScript;
+            if (scrip.getSrcAttribute().endsWith("/plugin/tap/interactive.js")){
+                return;
+            }
+        }
+        throw new AssertionError("No ineractive.js found");
+    }
+
     @Test
     /**
-     * This tests chexks that there is no JS exception if tap fie contains no tests
+     * This tests checks that there is no JS exception if tap fie contains no tests
      */
     public void checkNoTestDoNotFault() throws IOException, SAXException, ExecutionException, InterruptedException {
         final FreeStyleProject project = j.createFreeStyleProject();
-        String tapFileName = "suite2.tap";
+        String tapFileName = "suite1.tap";
         final Shell shell = new Shell("echo \"\" > " + tapFileName + "\n");
         project.getBuildersList().add(shell);
 
@@ -98,7 +168,7 @@ public class ExtendedJavascriptActionsTest {
             Future<?> f = project.scheduleBuild2(0);
             Run<?, ?> build = (Run<?, ?>) f.get();
             HtmlPage page = wc.goTo("job/" + project.getName() + "/" + build.getNumber() + "/tapResults/");
-            assertTrue("Ensuring that correct page was loaded", page.asXml().contains("interactive.js"));
+            checkInteractiveJs(page);
             List tables = page.getByXPath("//table[@class='tap']");
             assertEquals("There should still be tap table", 1, tables.size());
             List centerCells = page.getByXPath("//td[@class='center']");
@@ -143,6 +213,7 @@ public class ExtendedJavascriptActionsTest {
             Future<?> f = project.scheduleBuild2(0);
             Run<?, ?> build = (Run<?, ?>) f.get();
             HtmlPage page = wc.goTo("job/" + project.getName() + "/" + build.getNumber() + "/tapResults/");
+            checkInteractiveJs(page);
             List centerCells = page.getByXPath("//td[@class='center']");
             assertEquals("There should be four tests loaded", 4, centerCells.size());
             for (int x = 0; x < 4; x++) {
@@ -166,48 +237,12 @@ public class ExtendedJavascriptActionsTest {
     @Test
     @Issue("73483")
     /**
-     * This tests feature where each test id is pointable by UNIQUE anchor and the acnhor is provided by it
+     * this test checks that all is ivisble at start and that all classes needed forshow/hide actions are there
      */
     public void checkControlIdsExists() throws IOException, SAXException, ExecutionException, InterruptedException {
         final FreeStyleProject project = j.createFreeStyleProject();
-        String tapFileName = "suite3.tap";
-        String[] testIds = {
-                "Input file opened",
-                " First line of the input valid.",
-                "Read the rest of the file",
-                "Summarized correctly1 ", //this trailing space is important, it propagates to id
-                "Summarized correctly2 ", //this trailing space is important, it propagates to id
-                "Summarized correctly3 ", //this trailing space is important, it propagates to id
-                "hi no space1",
-                "hi no space2"
-
-        };
-        final Shell shell = new Shell("echo \"1..8\n" +
-                "ok 1 - " + testIds[0] + "\n" +
-                "not ok 2 - " + testIds[1] + "\n" +
-                "not ok 3 - " + testIds[2] + "# TODO\n" +
-                "not ok 4 - " + testIds[3] + "# skip\n" +
-                "#cmnt3\n" +
-                "ok 5 - " + testIds[4] + "# TODO Not written yet\n" +
-                "ok 6 - " + testIds[5] + "# skip written yet\n" +
-                "Bail out!\n" +
-                "Bail out! with reason\n" +
-                "not ok 7 -" + testIds[6] + "\n" +
-                "ok 8 -" + testIds[7] + "\n" +
-                "\" > " + tapFileName + "\n");
-        String[] classes = {
-                "", //header
-                "test_ok",
-                "test_not_ok",
-                "test_not_ok_TODO",
-                "test_not_ok_SKIP",
-                "test_ok_TODO",
-                "test_ok_SKIP",
-                "test_not_ok",
-                "test_ok",
-
-        };
-        project.getBuildersList().add(shell);
+        String tapFileName = "suite2.tap";
+        project.getBuildersList().add(getShell(tapFileName));
         final TapPublisher tapPublisher = getSimpleTapPublisher();
         project.getPublishersList().add(tapPublisher);
         project.save();
@@ -217,6 +252,7 @@ public class ExtendedJavascriptActionsTest {
             Future<?> f = project.scheduleBuild2(0);
             Run<?, ?> build = (Run<?, ?>) f.get();
             HtmlPage page = wc.goTo("job/" + project.getName() + "/" + build.getNumber() + "/tapResults/");
+            checkInteractiveJs(page);
             List tapRows = page.getByXPath("//table[@class='tap']//tr");
             assertEquals("There should be four tests loaded", 9, tapRows.size());
             DomNode cellHead = (DomNode) tapRows.get(0);
@@ -230,13 +266,35 @@ public class ExtendedJavascriptActionsTest {
                 HtmlTableRow tableRow = (HtmlTableRow) row;
                 assertTrue("the element must be visible", tableRow.isDisplayed());
             }
+        }
+    }
+
+    @Test
+    @Issue("73483")
+    /**
+     * this test is checking that preset views to they job in hiding/showing proepr elements
+     */
+    public void testPresetViewsWorks() throws IOException, SAXException, ExecutionException, InterruptedException {
+        final FreeStyleProject project = j.createFreeStyleProject();
+        String tapFileName = "suite2.tap";
+        project.getBuildersList().add(getShell(tapFileName));
+        final TapPublisher tapPublisher = getSimpleTapPublisher();
+        project.getPublishersList().add(tapPublisher);
+        project.save();
+
+        try (final JenkinsRule.WebClient wc = j.createWebClient()) {
+            wc.setThrowExceptionOnFailingStatusCode(false);
+            Future<?> f = project.scheduleBuild2(0);
+            Run<?, ?> build = (Run<?, ?>) f.get();
+            HtmlPage page = wc.goTo("job/" + project.getName() + "/" + build.getNumber() + "/tapResults/");
+            checkInteractiveJs(page);
             List mainViews = page.getByXPath("//u[@class='tapIclick']");
             assertEquals("There should be four tests loaded", 5, mainViews.size());
             HtmlUnderlined clickable = (HtmlUnderlined) (mainViews.get(0));
             clickable.click();
             List tapRowsAfter1click = page.getByXPath("//table[@class='tap']//tr");
             assertEquals("There should be four tests loaded", 9, tapRowsAfter1click.size());
-            cellHead = (DomNode) tapRowsAfter1click.get(0);
+            DomNode cellHead = (DomNode) tapRowsAfter1click.get(0);
             assertEquals("header have no atts", 0, cellHead.getAttributes().getLength());
             for (int x = 1; x < 8; x++) {
                 DomNode row = (DomNode) tapRowsAfter1click.get(x);
