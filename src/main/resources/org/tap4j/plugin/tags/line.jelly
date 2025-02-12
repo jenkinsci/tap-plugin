@@ -20,20 +20,21 @@
 						</j:if>
             		</j:if>
             		<j:if test="${hide == 'false'}">
-					    <tr>
+					    <tr class="${it.getClazz(tapLine)}" id="${it.getId(tapLine,tapFile)}">
 					        <tap:status testResult="${tapLine}" />
-					        <td width="5%" class="center">${tapLine.testNumber}</td>
-					        <td width="65%">${tapLine.description}</td>
+							<!-- If anchor ends with space, chromium like browsers are cutting them off-->
+							<td width="5%" class="center"><a href="#${it.getId(tapLine,tapFile)}!" name="${it.getId(tapLine,tapFile)}!">${tapLine.testNumber}</a></td>
+					        <td width="65%">${tapLine.description}  <u class="jsPM" onclick='extendedTapsetInteractives().showHideRowOne("tr_details_${it.getId(tapLine,tapFile)}")'>+/-</u></td>
 					        <tap:directive directive="${tapLine.directive}" />
 					    </tr>
 					    <!-- Comments diagnostics -->
 	                    <!-- tap:comments diagnostic="${tapLine.comments}" /-->
 					    <!-- YAML Diagnostics -->
-	                    <tap:yaml diagnostic="${tapLine.diagnostic}" tapFile="${tapFile}" />
+	                    <tap:yaml diagnostic="${tapLine.diagnostic}" tapFile="${tapFile}" tapLine="${tapLine}" />
 	                </j:if>
 				</j:when>
 				<j:when  test="${it.isBailOut( tapLine )}">
-				    <tr>
+					<tr class="${it.getClazz(tapLine)}">
                         <td class="red center" width="5%"><img src="/plugin/tap/icons/exclamation.png" alt="Bail out! ${tapLine.reason}" title="Bail out! ${tapLine.reason}" /></td>
                         <td width="5%" class="center"> </td>
                         <td width="65%"><span class="red_text bold">Bail out! ${tapLine.reason}</span></td>
@@ -41,7 +42,7 @@
                     </tr>
 				</j:when>
 				<j:when test="${it.isComment( tapLine ) and it.includeCommentDiagnostics}">
-                    <tr>
+                    <tr class="${it.getClazz(tapLine)}">
                         <td></td>
                         <td colspan='3'>
                             # ${it.escapeHTML(tapLine.text)}<br/>
