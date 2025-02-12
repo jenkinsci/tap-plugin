@@ -57,3 +57,75 @@ table.yaml td
 border: 1px solid #ccc;
 padding: 2px 4px;
 }
+
+
+.tapIclick {
+  cursor: pointer;
+}
+
+.jsPM {
+  cursor: pointer;
+}
+
+.tapItooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tapItooltip .tapItooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1000; /*jenkins toplevel bar is 999*/
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tapItooltip .tapItooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tapItooltip:hover .tapItooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+    .tapseExtendedPushed {
+      box-shadow: 5px 5px 5px lightblue inset;
+      border-style: none;
+      margin:5px;
+      padding:5px;
+      background-color: gray;
+    }
+    .tapseExtendedReleased {
+      box-shadow: 5px 5px 5px lightblue;
+      border-style: none;
+      margin:0px;
+      padding:5px;
+      background-color: lightgray;
+    }
+    .tapseExtendedMixed {
+      box-shadow: 0px 0px;
+      border-style: solid;
+      border-color: lightblue;
+      border-width: 2px;
+      margin:2px;
+      padding:5px;
+      background-color: darkgray;
+    }
+
