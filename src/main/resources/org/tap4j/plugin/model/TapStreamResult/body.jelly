@@ -25,28 +25,7 @@ THE SOFTWARE.
 
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-
-  <script type="text/javascript">
-		<!-- TODO make sure load doesn't happen every time -->
-		function showStackTrace(id,query) {
-			var element = document.getElementById(id)
-			element.style.display = "";
-			document.getElementById(id + "-showlink").style.display = "none";
-			document.getElementById(id + "-hidelink").style.display = "";
-			
-			var rqo = new XMLHttpRequest();
-			rqo.open('GET', query, true);
-			rqo.onreadystatechange = function() { element.innerHTML = rqo.responseText; }  
-			rqo.send(null);
-		}
-		
-		function hideStackTrace(id) {
-			document.getElementById(id).style.display = "none";
-			document.getElementById(id + "-showlink").style.display = "";
-			document.getElementById(id + "-hidelink").style.display = "none";
-		}
-  </script>
-
+  <st:adjunct includes="org.tap4j.plugin.model.TapStreamResult.tap-results"/>
   <j:if test="${it.failCount!=0}">
     <h2>${%All Failed Tests}</h2>
     <table class="pane sortable">
@@ -58,10 +37,8 @@ THE SOFTWARE.
       <j:forEach var="f" items="${it.failedTests2}" varStatus="i">
         <tr>
           <td class="pane">
-            <!--a id="test-${f.fullName}-showlink"
-               href="javascript:showStackTrace('test-${h.jsStringEscape(f.fullName)}','${f.getRelativePathFrom(it)}/')">&gt;&gt;&gt;</a-->
-            <a id="test-${f.fullName}-hidelink" style="display:none"
-               href="javascript:hideStackTrace('test-${h.jsStringEscape(f.fullName)}')">&lt;&lt;&lt;</a>
+<!--            <a id="test-${f.fullName}-showlink" data-query="${f.getRelativePathFrom(it)}/">&gt;&gt;&gt;</a>-->
+            <a id="test-${f.fullName}-hidelink" style="display:none">&lt;&lt;&lt;</a>
             <st:nbsp/>
             <a href="${f.getRelativePathFrom(it)}" class="model-link"><st:out value="${f.fullName}"/></a>
             <st:nbsp/>
