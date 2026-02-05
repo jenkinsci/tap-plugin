@@ -30,6 +30,7 @@ import hudson.model.HealthReport;
 import hudson.model.HealthReportingAction;
 import hudson.model.Job;
 import hudson.model.Run;
+import hudson.tasks.test.AbstractTestResultAction;
 import jenkins.model.RunAction2;
 import jenkins.tasks.SimpleBuildStep;
 import jenkins.util.NonLocalizable;
@@ -44,12 +45,8 @@ import java.util.Collections;
 /**
  * @since 0.1
  */
-public class TapTestResultAction
+public class TapTestResultAction extends AbstractTestResultAction<TapTestResultAction>
         implements StaplerProxy, SimpleBuildStep.LastBuildAction, HealthReportingAction, RunAction2 {
-
-    public transient Run<?, ?> run;
-    @Deprecated
-    public transient AbstractBuild<?, ?> owner;
 
     private TapResult tapResult;
 
@@ -57,6 +54,13 @@ public class TapTestResultAction
         setRunAndOwner(r);
 
         this.tapResult = tapResult;
+    }
+
+    /**
+     * @return the current Run to support new JUnit
+     */
+    public Run<?, ?> getObject() {
+        return run;
     }
 
     /**
@@ -99,7 +103,7 @@ public class TapTestResultAction
     }
 
     public TapStreamResult getResult() {
-        return new TapStreamResult(owner, tapResult);
+        return new TapStreamResult(owner, tapResult, this);
     }
 
     /* (non-Javadoc)
