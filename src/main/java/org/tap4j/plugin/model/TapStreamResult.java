@@ -25,6 +25,7 @@ package org.tap4j.plugin.model;
 
 import hudson.model.Run;
 import hudson.tasks.junit.CaseResult;
+import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.TabulatedResult;
 import hudson.tasks.test.TestObject;
 import hudson.tasks.test.TestResult;
@@ -33,6 +34,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
 import org.tap4j.model.TestSet;
 import org.tap4j.plugin.TapResult;
+import org.tap4j.plugin.TapTestResultAction;
 import org.tap4j.util.StatusValues;
 
 import javax.annotation.Nullable;
@@ -50,12 +52,14 @@ public class TapStreamResult extends TabulatedResult {
 
     private static final long serialVersionUID = 8337146933697574082L;
     private final transient Run<?, ?> owner;
+    private final transient AbstractTestResultAction tapTestResultAction;
     private List<TestResult> children = new ArrayList<>();
     private TapResult tapResult;
 
-    public TapStreamResult(Run<?, ?> owner, TapResult tapResult) {
+    public TapStreamResult(Run<?, ?> owner, TapResult tapResult, AbstractTestResultAction tapTestResultAction) {
         this.owner = owner;
         this.tapResult = tapResult;
+        this.tapTestResultAction = tapTestResultAction;
         setChildrenInfo();
     }
     
@@ -73,6 +77,15 @@ public class TapStreamResult extends TabulatedResult {
     @Override
     public Run<?, ?> getRun() {
         return owner;
+    }
+
+    public String getTitle() {
+        return getDisplayName();
+    }
+
+    @Override
+    public AbstractTestResultAction getParentAction() {
+        return tapTestResultAction;
     }
 
     /* (non-Javadoc)
