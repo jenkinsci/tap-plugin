@@ -40,6 +40,7 @@ import org.tap4j.model.Plan;
 import org.tap4j.model.TestSet;
 import org.tap4j.plugin.model.TestSetMap;
 import org.tap4j.plugin.util.Constants;
+import org.jenkinsci.Symbol;
 
 import hudson.EnvVars;
 import hudson.Extension;
@@ -582,6 +583,7 @@ public class TapPublisher extends Recorder implements MatrixAggregatable, Simple
     }
 
     @Extension
+    @Symbol("publishTap")
     public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
         public DescriptorImpl() {
             super(TapPublisher.class);
