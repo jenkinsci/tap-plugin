@@ -23,6 +23,8 @@
  */
 package org.tap4j.plugin.util;
 
+import org.tap4j.model.TestResult;
+
 import hudson.Functions;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -31,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Used to create YAML view. FIXME: Figure out another way to write HTML (send JSON to Stapler/Groovy/etc.?).
@@ -45,8 +46,6 @@ public class DiagnosticUtil {
         TEXT, IMAGE
     }
 
-    private static final String INNER_TABLE_HEADER = "<tr>\n<td colspan='4' class='yaml'>\n<table width=\"100%\" class=\"yaml\">";
-
     private static final String INNER_TABLE_FOOTER = "</table>\n</td>\n</tr>";
 
     private static final int MAX_DEPTH = 3;
@@ -55,9 +54,26 @@ public class DiagnosticUtil {
         super();
     }
 
-    public static String createDiagnosticTable(String tapFile, Map<String, Object> diagnostic) {
+    private static String getInnerTableHeader(String id, String clazz) {
+        String innerTableHeader = "<tr TR_ID TR_CLASS>\n" +
+                "<td colspan='4' class='yaml' >\n" +
+                "<table width='100%' class='yaml' >";
+        if (id == null) {
+            innerTableHeader = innerTableHeader.replace("TR_ID", "");
+        } else {
+            innerTableHeader = innerTableHeader.replace("TR_ID", "id='tr_" + id + "'");
+        }
+        if (clazz == null) {
+            innerTableHeader = innerTableHeader.replace("TR_CLASS", "");
+        } else {
+            innerTableHeader = innerTableHeader.replace("TR_CLASS", "class='tr_" + clazz + "'");
+        }
+        return innerTableHeader;
+    }
+
+    public static String createDiagnosticTable(String tapFile, Map<String, Object> diagnostic, TestResult tapLine) {
         StringBuilder sb = new StringBuilder();
-        createDiagnosticTableRecursively(tapFile, null, diagnostic, sb, 1);
+        createDiagnosticTableRecursively(tapFile, null, diagnostic, sb, 1, tapLine);
         return sb.toString();
     }
 
@@ -67,9 +83,12 @@ public class DiagnosticUtil {
             String parentKey,
             Map<String, Object> diagnostic,
             StringBuilder sb,
-            int depth) {
+            int depth,
+            TestResult tapLine) {
 
-        sb.append(INNER_TABLE_HEADER);
+        String id = getId(tapLine, tapFile);
+        String clazz = getClazz(tapLine);
+        sb.append(getInnerTableHeader(id, clazz));
 
         final RENDER_TYPE renderType = getMapEntriesRenderType(diagnostic);
         final List<String> parentKeys = Arrays.asList("files", "extensions");
@@ -81,7 +100,7 @@ public class DiagnosticUtil {
             sb.append("<tr>");
 
             sb.append("<td width='5%' class='hidden'> </td>".repeat(Math.max(0, depth)));
-            sb.append("<td style=\"width: auto;\">").append(StringEscapeUtils.escapeHtml(key)).append("</td>");
+            sb.append("<td style=\"width: auto;\">").append(StringEscapeUtils.escapeHtml(key)).append(jspm(getKeyId(key, id))).append("</td>");
 
             if(renderType == RENDER_TYPE.IMAGE && key.equals("File-Content")) {
                 final Object o = diagnostic.get("File-Name");
@@ -89,7 +108,8 @@ public class DiagnosticUtil {
                 final boolean useParentKey = (parentKey != null && depth > MAX_DEPTH && !parentKeys.contains(parentKey.trim().toLowerCase(Locale.ROOT)));
                 final String downloadKey = useParentKey ? parentKey : fileName;
                 Arrays.asList(
-                        "<td><a href='downloadAttachment?f=",
+                        td(key,id),
+                        "<a href='downloadAttachment?f=",
                         Functions.htmlAttributeEscape(tapFile),
                         "&key=",
                         Functions.htmlAttributeEscape(downloadKey),
@@ -98,15 +118,20 @@ public class DiagnosticUtil {
                         "</a></td>"
                 ).forEach(sb::append);
             } else if (renderType == RENDER_TYPE.TEXT && value instanceof java.util.Map) {
-                sb.append("<td> </td>");
-                createDiagnosticTableRecursively(tapFile, key, (java.util.Map) value, sb, (depth + 1));
+                sb.append(td(key,id)).append(" </td>");
+                createDiagnosticTableRecursively(tapFile, key, (java.util.Map) value, sb, (depth + 1), tapLine);
             } else {
-                sb.append("<td><pre>").append(org.apache.commons.lang.StringEscapeUtils.escapeHtml(value.toString())).append("</pre></td>");
+                sb.append(td(key,id)).append("<pre>").append(org.apache.commons.lang.StringEscapeUtils.escapeHtml(value.toString())).append("</pre></td>");
             }
             sb.append("</tr>");
         }
 
         sb.append(INNER_TABLE_FOOTER);
+    }
+
+
+    private static String td(String key, String id) {
+        return "<td class='detail_body'' id='" + getKeyId(key, id) + "' >";
     }
 
     private static RENDER_TYPE getMapEntriesRenderType(Map<String, Object> diagnostic) {
@@ -116,6 +141,22 @@ public class DiagnosticUtil {
             }
         }
         return RENDER_TYPE.TEXT;
+    }
+
+    private static String getClazz(TestResult tapLine) {
+        return Util.getClazz("details_", tapLine);
+    }
+
+    private static String getKeyId(String key, String id) {
+        return StringEscapeUtils.escapeHtml(key + "_" + id);
+    }
+
+    private static String getId(TestResult tapLine, String file) {
+        return Util.getId("details_", tapLine, file);
+    }
+
+    private static String jspm(String id) {
+        return " <u class=\"jsPM\" onclick='extendedTapsetInteractives().showHideBlockOne(\"" + id + "\")'>+/-</u>";
     }
 
 }
