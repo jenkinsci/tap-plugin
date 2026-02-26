@@ -106,7 +106,7 @@ public class TapTestResultResult extends TestResult {
             TestSetMap subTest = new TestSetMap(testSetMap.getFileName(), testSet);
             List<TestSetMap> list = new ArrayList<>();
             list.add(subTest);
-            parent = new TapStreamResult(owner, new TapResult("TAP Test Results", owner, list, todoIsFailure, includeCommentDiagnostics, validateNumberOfTests));
+            parent = new TapStreamResult(owner, new TapResult("TAP Test Results", owner, list, todoIsFailure, includeCommentDiagnostics, validateNumberOfTests), getTestResultAction());
         }
         return parent;
     }
