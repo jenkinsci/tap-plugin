@@ -4,6 +4,7 @@
 
 - build(deps): bump org.yaml:snakeyaml from 2.2 to 2.6
 - [GH-44](https://github.com/jenkinsci/tap-plugin/pull/44): Add @Symbol("publishTap") to TapPublisher Descriptor and pipeline test (thanks @0xShubhamSolanki)
+- [JENKINS-76360](https://issues.jenkins.io/browse/JENKINS-76360) Fix NPE on TAP Test Results screen (thanks @janfaracik)
 
 ## Version 2.4.4 (2025/03/13)
 

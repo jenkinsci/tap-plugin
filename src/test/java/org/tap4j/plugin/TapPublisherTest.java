@@ -45,9 +45,11 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 
 
+/**
+ * Tests for the {@link TapPublisher}.
+ */
 public class TapPublisherTest {
 
     @Rule
@@ -238,21 +240,18 @@ public class TapPublisherTest {
         TapTestResultAction testResultAction = build.getAction(TapTestResultAction.class);
         assertNotNull("no TestResultAction", testResultAction);
 
-        TestResult result = testResultAction.getResult();
-        assertNotNull("no TestResult", result);
+        TapStreamResult streamResult = testResultAction.getResult();
+        assertNotNull("no TestResult", streamResult);
 
         assertEquals(String.format("should have %d failing test", failed), failed, testResultAction.getFailCount());
-        assertEquals(String.format("should have %d failing test", failed), failed, result.getFailCount());
+        assertEquals(String.format("should have %d failing test", failed), failed, streamResult.getFailCount());
 
         assertEquals(String.format("should have %d total tests", total), total, testResultAction.getTotalCount());
-        assertEquals(String.format("should have %d total tests", total), total, result.getTotalCount());
+        assertEquals(String.format("should have %d total tests", total), total, streamResult.getTotalCount());
 
         assertEquals(String.format("should have %d skipped test", 1), 1, testResultAction.getSkipCount());
-        assertEquals(String.format("should have %d skipped test", 1), 1, result.getSkipCount());
+        assertEquals(String.format("should have %d skipped test", 1), 1, streamResult.getSkipCount());
 
-        assertTrue(result instanceof TapStreamResult);
-
-        TapStreamResult streamResult = (TapStreamResult) result;
         assertSame("parent action should be the owning TapTestResultAction", testResultAction, streamResult.getParentAction());
     }
 
