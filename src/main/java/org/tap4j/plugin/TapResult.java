@@ -262,7 +262,7 @@ public class TapResult implements ModelObject, Serializable {
     }
 
     public boolean isEmptyTestSet() {
-        return this.testSets.size() <= 0;
+        return this.testSets.isEmpty();
     }
 
     /**
@@ -273,7 +273,7 @@ public class TapResult implements ModelObject, Serializable {
     }
 
     public boolean hasParseErrors() {
-        return this.parseErrorTestSets.size() > 0;
+        return !this.parseErrorTestSets.isEmpty();
     }
 
     public int getFailed() {
@@ -399,7 +399,7 @@ public class TapResult implements ModelObject, Serializable {
     private TapAttachment getAttachment(TestSet ts, String key) {
         for (TestResult tr : ts.getTestResults()) {
             Map<String, Object> diagnostics = tr.getDiagnostic();
-            if (diagnostics != null && diagnostics.size() > 0) {
+            if (diagnostics != null && !diagnostics.isEmpty()) {
                 TapAttachment attachment = recursivelySearch(diagnostics, null, key);
                 if (attachment != null) {
                     return attachment;

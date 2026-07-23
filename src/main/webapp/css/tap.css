@@ -1,59 +1,84 @@
 /* TAP Plug-in CSS styles */
 
-.cyan { background-color: #00FFFF; }
-.cyan_text { color: #00FFFF; }
-.green { background-color: #97f477; }
-.green_text { color: #97f477; }
-.red { background-color: #f88676; }
-.red_text { color: #B40404; }
-.yellow { background-color: #FFBF00 }
-.yellow_text { color: #FFBF00 }
-.center { text-align: center; }
-.underline { text-decoration: underline; }
-.bold {font-weight: 700;}
-
-table.tap
-{
-border: 0px solid;
-border-collapse:collapse;
+.cyan {
+    background-color: #00FFFF;
 }
 
-table.tap th
-{
-border: 1px solid #999;
-padding: 2px 4px;
-background-color: #eee;
-color: #000;
+.cyan_text {
+    color: #00FFFF;
 }
 
-table.tap td
-{
-border: 1px solid #999;
-padding: 2px 4px;
+.green {
+    background-color: #97f477;
 }
 
-table.tap td.yaml
-{
-border: 1px solid #999;
-padding: 0px 0px;
+.green_text {
+    color: #97f477;
 }
 
-table.yaml
-{
-border: 0px solid;
-border-collapse:collapse;
+.red {
+    background-color: #f88676;
 }
 
-table.yaml td.hidden 
-{
-background-color: white;
-border: 0px solid;
-color: white;
-padding: 0px;
+.red_text {
+    color: #B40404;
 }
 
-table.yaml td 
-{
-border: 1px solid #ccc;
-padding: 2px 4px;
+.yellow {
+    background-color: #FFBF00
+}
+
+.yellow_text {
+    color: #FFBF00
+}
+
+.center {
+    text-align: center;
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+.bold {
+    font-weight: 700;
+}
+
+table.tap {
+    border: 0 solid;
+    border-collapse: collapse;
+}
+
+table.tap th {
+    border: 1px solid #999;
+    padding: 2px 4px;
+    background-color: #eee;
+    color: #000;
+}
+
+table.tap td {
+    border: 1px solid #999;
+    padding: 2px 4px;
+}
+
+table.tap td.yaml {
+    border: 1px solid #999;
+    padding: 0 0;
+}
+
+table.yaml {
+    border: 0 solid;
+    border-collapse: collapse;
+}
+
+table.yaml td.hidden {
+    background-color: white;
+    border: 0 solid;
+    color: white;
+    padding: 0;
+}
+
+table.yaml td {
+    border: 1px solid #ccc;
+    padding: 2px 4px;
 }

@@ -104,7 +104,7 @@ public class TestStripSingleParent {
 
         project.getPublishersList().add(publisher);
         project.save();
-        FreeStyleBuild build = (FreeStyleBuild) project.scheduleBuild2(0).get();
+        FreeStyleBuild build = project.scheduleBuild2(0).get();
 
         TapTestResultAction action = build.getAction(TapTestResultAction.class);
         TapResult testResult = action.getTapResult();

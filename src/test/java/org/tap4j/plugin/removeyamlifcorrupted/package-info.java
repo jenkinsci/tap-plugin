@@ -1,4 +1,4 @@
 /**
- * Tests corrupted YAML removal feature feature.
+ * Tests corrupted YAML removal feature.
  */
 package org.tap4j.plugin.removeyamlifcorrupted;

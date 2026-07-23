@@ -12,6 +12,8 @@ import java.io.ByteArrayOutputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.Rule;
@@ -150,7 +152,7 @@ public class TestFlattenTapResult {
         while ((length = is.read(buffer)) != -1) {
             result.write(buffer, 0, length);
         }
-        return result.toString("UTF-8");
+        return result.toString(StandardCharsets.UTF_8);
     }
 
     private void _test(final String tap, int expectedTotal, String[] expectedDescriptions, boolean printDescriptions) throws IOException, InterruptedException, ExecutionException {
@@ -160,7 +162,7 @@ public class TestFlattenTapResult {
             @Override
             public boolean perform(AbstractBuild<?, ?> build, Launcher arg1,
                     BuildListener arg2) throws InterruptedException, IOException {
-                build.getWorkspace().child("result.tap").write(tap,"UTF-8");
+                Objects.requireNonNull(build.getWorkspace()).child("result.tap").write(tap,"UTF-8");
                 return true;
             }
         });
@@ -185,7 +187,7 @@ public class TestFlattenTapResult {
 
         project.getPublishersList().add(publisher);
         project.save();
-        FreeStyleBuild build = (FreeStyleBuild) project.scheduleBuild2(0).get();
+        FreeStyleBuild build = project.scheduleBuild2(0).get();
 
         TapTestResultAction action = build.getAction(TapTestResultAction.class);
         TapResult testResult = action.getTapResult();

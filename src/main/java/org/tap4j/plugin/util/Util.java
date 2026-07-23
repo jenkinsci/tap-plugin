@@ -36,20 +36,20 @@ public final class Util {
     private Util() {}
     
     /**
-     * Normalizes a folder path in relation to the workspace path.
+     * Normalises a folder path in relation to the workspace path.
      * <p>
      * A folder that is subdirectory of workspace will return only the difference.
      * It means that if the workspace is /home/workspace and the folder we want 
-     * to normalize is /home/workspace/job-1/test.txt, then the return will be
+     * to normalise is /home/workspace/job-1/test.txt, then the return will be
      * job-1/test.txt.
      * 
      * @param workspace workspace path
      * @param relative relative path
-     * @return normalized path
+     * @return normalised path
      */
     public static String normalizeFolders(String workspace, String relative) {
-        workspace = workspace.replaceAll("\\\\", "\\/");
-        relative = relative.replaceAll("\\\\", "\\/");
+        workspace = workspace.replaceAll("\\\\", "/");
+        relative = relative.replaceAll("\\\\", "/");
         if (relative.length() > workspace.length() && relative.contains(workspace)) {
             String temp = relative.substring(workspace.length());
             if (temp.startsWith("/") || temp.startsWith("\\"))

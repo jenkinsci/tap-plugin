@@ -64,10 +64,10 @@ public class TestIssue16647 {
                 false);
         project.getPublishersList().add(publisher);
         project.save();
-        FreeStyleBuild build = (FreeStyleBuild) project.scheduleBuild2(0).get();
+        FreeStyleBuild build = project.scheduleBuild2(0).get();
 
         TapTestResultAction action = build.getAction(TapTestResultAction.class);
-        TapStreamResult result = (TapStreamResult) action.getResult();
+        TapStreamResult result = action.getResult();
 
         TapTestResultResult[] results = result.getChildren().toArray(new TapTestResultResult[0]);
         assertEquals(100.66f, results[1].getDuration(), /* delta */ 0.0001f);

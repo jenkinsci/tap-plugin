@@ -122,7 +122,7 @@ public class TapStreamResult extends TabulatedResult {
      */
     @Override
     public boolean hasChildren() {
-        return children.size() > 0;
+        return !children.isEmpty();
     }
     
     /* (non-Javadoc)
@@ -168,7 +168,7 @@ public class TapStreamResult extends TabulatedResult {
     // FIXME: use the getFailedTests, or explain why it's not used
     public List<TestResult> getFailedTests2() {
         List<TestResult> failedTests = new ArrayList<>();
-        if(tapResult != null && tapResult.getTestSets().size() > 0) {
+        if(tapResult != null && !tapResult.getTestSets().isEmpty()) {
             for(TestSetMap tsm : tapResult.getTestSets()) {
                 TestSet ts = tsm.getTestSet();
                 for(org.tap4j.model.TestResult tr : ts.getTestResults()) {

@@ -29,7 +29,7 @@ public class TestIssue16964 {
     public JenkinsRule jenkins = new JenkinsRule();
 
     @Test
-    public void testFailTestEmptyResultsAndOldReports() throws IOException, ServletException, InterruptedException, ExecutionException {
+    public void testFailTestEmptyResultsAndOldReports() throws IOException, InterruptedException, ExecutionException {
         FreeStyleProject project = jenkins.createProject(FreeStyleProject.class, "tap-bug-16964");
         
         final String tap = "1..4\n" + 
@@ -72,7 +72,7 @@ public class TestIssue16964 {
                 false);
         project.getPublishersList().add(publisher);
         project.save();
-        FreeStyleBuild build = (FreeStyleBuild) project.scheduleBuild2(0).get();
+        FreeStyleBuild build = project.scheduleBuild2(0).get();
         
         TapTestResultAction action = build.getAction(TapTestResultAction.class);
         TapResult testResult = action.getTapResult();

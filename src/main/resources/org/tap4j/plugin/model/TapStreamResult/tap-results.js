@@ -12,7 +12,7 @@ Behaviour.specify('a[id$="-showlink"]', 'tap-result', 0, function(e) {
         if (showLink) showLink.style.display = 'none';
         if (hideLink) hideLink.style.display = '';
 
-        var rqo = new XMLHttpRequest();
+        const rqo = new XMLHttpRequest();
         rqo.open('GET', query, true);
         rqo.onreadystatechange = function() { element.innerHTML = rqo.responseText; }
         rqo.send(null);

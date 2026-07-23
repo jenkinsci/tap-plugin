@@ -377,7 +377,7 @@ public class TapPublisher extends Recorder implements MatrixAggregatable, Simple
             }
 
             assert testResult != null;
-            if (testResult.getTestSets().size() > 0 || testResult.getParseErrorTestSets().size() > 0) {
+            if (!testResult.getTestSets().isEmpty() || !testResult.getParseErrorTestSets().isEmpty()) {
                 // create an individual report for all the results and add it to
                 // the build
 

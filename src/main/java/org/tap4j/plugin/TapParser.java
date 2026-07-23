@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.apache.commons.io.FileUtils;
 import org.tap4j.model.Plan;
 import org.tap4j.model.TestResult;
@@ -51,13 +52,17 @@ import hudson.model.Run;
  */
 public class TapParser {
 
-    /** Prints the logs to the web server's console / log files */
+    /**
+     * Prints the logs to the web server's console / log files
+     */
     private static final Logger log = Logger.getLogger(TapParser.class.getName());
     private final Boolean outputTapToConsole;
     private final Boolean enableSubtests;
     private final Boolean todoIsFailure;
 
-    /** Build's logger to print logs as part of build's console output */
+    /**
+     * Build's logger to print logs as part of build's console output
+     */
     private final PrintStream logger;
     private final Boolean includeCommentDiagnostics;
     private final Boolean validateNumberOfTests;
@@ -71,9 +76,9 @@ public class TapParser {
     private boolean parserErrors;
 
     public TapParser(Boolean outputTapToConsole, Boolean enableSubtests, Boolean todoIsFailure,
-            Boolean includeCommentDiagnostics, Boolean validateNumberOfTests, Boolean planRequired, Boolean verbose,
-            Boolean stripSingleParents, Boolean flattenTheTap, Boolean removeYamlIfCorrupted,
-            PrintStream logger) {
+                     Boolean includeCommentDiagnostics, Boolean validateNumberOfTests, Boolean planRequired, Boolean verbose,
+                     Boolean stripSingleParents, Boolean flattenTheTap, Boolean removeYamlIfCorrupted,
+                     PrintStream logger) {
         this.outputTapToConsole = outputTapToConsole;
         this.enableSubtests = enableSubtests;
         this.todoIsFailure = todoIsFailure;
@@ -143,7 +148,7 @@ public class TapParser {
     private boolean containsNotOk(TestSet testSet) {
         for (TestResult testResult : testSet.getTestResults()) {
             if (testResult.getStatus().equals(StatusValues.NOT_OK) && !(testResult.getDirective() != null
-                    && DirectiveValues.SKIP == testResult.getDirective().getDirectiveValue())) {
+                && DirectiveValues.SKIP == testResult.getDirective().getDirectiveValue())) {
                 return true;
             }
         }
@@ -193,7 +198,7 @@ public class TapParser {
             }
         }
         return new TapResult("TAP Test Results", build, testSets, this.todoIsFailure,
-                this.includeCommentDiagnostics, this.validateNumberOfTests);
+            this.includeCommentDiagnostics, this.validateNumberOfTests);
     }
 
     private TestSet stripSingleParentsAsRequired(TestSet originalSet) {
@@ -231,21 +236,14 @@ public class TapParser {
                     final Plan subtestPlan = subtests.getPlan();
                     final boolean planIsPresent = subtestPlan != null;
                     final int subtestCountAsPlanned = planIsPresent ?
-                            subtestPlan.getLastTestNumber() - subtestPlan.getInitialTestNumber() + 1
-                            : -1;
+                        subtestPlan.getLastTestNumber() - subtestPlan.getInitialTestNumber() + 1
+                        : -1;
 
-                    final boolean subtestCountDiffersFromPlan = planIsPresent &&  subtestCountAsPlanned != subtestResults.size();
+                    final boolean subtestCountDiffersFromPlan = planIsPresent && subtestCountAsPlanned != subtestResults.size();
 
                     if (subtestCountDiffersFromPlan) {
 
-                        final int missingTestCount =
-                                subtestCountAsPlanned - subtestResults.size();
-
-                        final TestResult timeoutTestResult = new TestResult();
-                        timeoutTestResult.setStatus(StatusValues.NOT_OK);
-                        timeoutTestResult.setDescription(
-                                String.format("%s %s %d %s",
-                                        actualTestResult.getDescription(), "failed:", missingTestCount, "subtest(s) missing"));
+                        final TestResult timeoutTestResult = getTestResult(subtestCountAsPlanned, subtestResults, actualTestResult);
 
                         resultsToProcess.add(timeoutTestResult);
                     }
@@ -253,6 +251,19 @@ public class TapParser {
             }
             return result;
         }
+    }
+
+    @NonNull
+    private static TestResult getTestResult(int subtestCountAsPlanned, List<TestResult> subtestResults, TestResult actualTestResult) {
+        final int missingTestCount = subtestCountAsPlanned - subtestResults.size();
+
+        final TestResult timeoutTestResult = new TestResult();
+        timeoutTestResult.setStatus(StatusValues.NOT_OK);
+        timeoutTestResult.setDescription(
+            String.format("%s %s %d %s",
+                actualTestResult.getDescription(), "failed:", missingTestCount, "subtest(s) missing")
+        );
+        return timeoutTestResult;
     }
 
     private boolean hasSingleParent(TestSet testSet) {

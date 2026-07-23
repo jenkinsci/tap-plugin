@@ -233,7 +233,7 @@ public class GraphHelper
             }
 
             /**
-             * Returns the paint for an item. Overrides the default behavior
+             * Returns the paint for an item. Overrides the default behaviour
              * inherited from AbstractSeriesRenderer.
              * 
              * @param row
@@ -241,14 +241,14 @@ public class GraphHelper
              * @param column
              *            the category.
              * 
-             * @return The item color.
+             * @return The item colour.
              */
             public Paint getItemPaint( final int row, final int column )
             {
                 NumberOnlyBuildLabel label = (NumberOnlyBuildLabel) dataset
                         .getColumnKey(column);
                 Paint paint = statusPaintMap.get(statusMap.get(label));
-                // when the status of test method is unknown, use gray color
+                // when the status of test method is unknown, use grey colour
                 return paint == null ? Color.gray : paint;
             }
 

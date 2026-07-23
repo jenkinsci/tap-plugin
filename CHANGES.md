@@ -69,7 +69,7 @@
 
 1. [JENKINS-23851: Expand env vars in the ant pattern field](https://issues.jenkins-ci.org/browse/JENKINS-23851)
 2. [JENKINS-17804: Add option to show only failures](https://issues.jenkins-ci.org/browse/JENKINS-17804)
-3. [JENKINS-29650: Don't use a build step synchronization, defaulting to NONE.](https://issues.jenkins-ci.org/browse/JENKINS-29650)
+3. [JENKINS-29650: Don't use a build step synchronisation, defaulting to NONE.](https://issues.jenkins-ci.org/browse/JENKINS-29650)
 4. [JENKINS-30751: Use same logic everywhere to say whether a test is a failure or not](https://issues.jenkins-ci.org/browse/JENKINS-30751)
 5. [JENKINS-24843: Copy duration from Tabulated Tests](https://issues.jenkins-ci.org/browse/JENKINS-24843)
 6. [pull request \#6: fix duration\_ms (thanks to @forrest79)](https://github.com/jenkinsci/tap-plugin/pull/6)
@@ -195,5 +195,5 @@
 
 1. Initial design of the plug-in
 2. Custom UI for TAP test results
-3. JUnit-like graph that displays the test results per build (actually the graph was modeled using TestNG Plug-in as
+3. JUnit-like graph that displays the test results per build (actually the graph was modelled using TestNG Plug-in as
    basis)

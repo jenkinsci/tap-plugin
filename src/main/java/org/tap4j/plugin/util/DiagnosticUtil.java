@@ -39,6 +39,7 @@ import java.util.Set;
  * @since 1.0
  * @deprecated To be soon removed by something easier to maintain (return JSON to JS?).
  */
+@Deprecated
 public class DiagnosticUtil {
 
     private enum RENDER_TYPE {
