@@ -52,6 +52,11 @@ public class TapStreamResult extends TabulatedResult {
 
     private static final long serialVersionUID = 8337146933697574082L;
     private final transient Run<?, ?> owner;
+    /**
+     * The owning action is required by newer Jenkins test result rendering.
+     * TapStreamResult instances are recreated by TapTestResultAction#getResult(),
+     * so this reference does not need to be persisted.
+     */
     private final transient AbstractTestResultAction tapTestResultAction;
     private List<TestResult> children = new ArrayList<>();
     private TapResult tapResult;
