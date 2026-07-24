@@ -23,6 +23,7 @@
  */
 package org.tap4j.plugin.util;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.tap4j.model.Directive;
 import org.tap4j.model.TestResult;
 import org.tap4j.util.DirectiveValues;
@@ -91,5 +92,14 @@ public final class Util {
             r = true;
         }
         return r;
+    }
+
+    public static String getClazz(String prefix, TestResult tapLine) {
+        return StringEscapeUtils.escapeHtml((prefix + tapLine.getStatus() + (tapLine.getDirective() == null ? "" :
+                "_" + tapLine.getDirective().getDirectiveValue())).replaceAll("\\s+", "_"));
+    }
+
+    public static String getId(String prefix, TestResult tapLine, String file) {
+        return StringEscapeUtils.escapeHtml((prefix + file + "_" + tapLine.getTestNumber() + "_" + tapLine.getDescription()).replaceAll("\\s+", "_"));
     }
 }
