@@ -3,24 +3,22 @@ package org.tap4j.plugin.util;
 
 import hudson.model.TopLevelItem;
 import org.htmlunit.html.HtmlPage;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.jvnet.hudson.test.recipes.LocalData;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
+@WithJenkins
 public class GraphHelperTest {
-
-    @Rule
-    public JenkinsRule rule = new JenkinsRule();
 
     @Issue("JENKINS-37623")
     @LocalData
     @Test
-    public void renderTooltipsWithFailedBuilds() throws Exception {
+    public void renderTooltipsWithFailedBuilds(JenkinsRule rule) throws Exception {
 
         TopLevelItem project = rule.jenkins.getItem("testPipeline-randomly-no-data");
         try (JenkinsRule.WebClient wc = rule.createWebClient()) {

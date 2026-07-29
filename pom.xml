@@ -68,6 +68,7 @@ SOFTWARE.
     <ban-deprecated-stapler.skip>false</ban-deprecated-stapler.skip>
     <ban-commons-lang-2.skip>false</ban-commons-lang-2.skip>
     <hpi.bundledArtifacts>tap4j</hpi.bundledArtifacts>
+    <ban-junit4-imports.skip >false</ban-junit4-imports.skip >
   </properties>
 
   <scm>

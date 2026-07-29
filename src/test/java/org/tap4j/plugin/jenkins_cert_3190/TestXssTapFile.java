@@ -27,10 +27,10 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Run;
 import hudson.tasks.Shell;
 import org.htmlunit.CollectingAlertHandler;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.tap4j.plugin.TapPublisher;
 import org.xml.sax.SAXException;
 
@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Prevent a case where TAP files with JavaScript code are
@@ -48,13 +48,11 @@ import static org.junit.Assert.assertEquals;
  * @since 2.4.1
  */
 @Issue("3190")
+@WithJenkins
 public class TestXssTapFile {
 
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
-
     @Test
-    public void testTapFileXss() throws IOException, SAXException, ExecutionException, InterruptedException {
+    public void testTapFileXss(JenkinsRule j) throws IOException, SAXException, ExecutionException, InterruptedException {
         final FreeStyleProject project = j.createFreeStyleProject();
 
         // We can add more scenarios where XSS must be prevented in
@@ -109,7 +107,7 @@ public class TestXssTapFile {
 
             final List<String> alerts = alertHandler.getCollectedAlerts();
 
-            assertEquals("You got a JS alert, look out for XSS!", 0, alerts.size());
+            assertEquals(0, alerts.size(), "You got a JS alert, look out for XSS!");
         }
     }
 }

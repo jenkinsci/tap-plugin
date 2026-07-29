@@ -6,16 +6,16 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleProject;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.tap4j.plugin.TapPublisher;
 import org.tap4j.plugin.TapResult;
 import org.tap4j.plugin.TapTestResultAction;
@@ -25,13 +25,11 @@ import org.tap4j.plugin.TapTestResultAction;
  *
  * @author Jakub Podlesak
  */
+@WithJenkins
 public class TestRemoveYamlIfCorrupted {
 
-    @Rule
-    public JenkinsRule jenkins = new JenkinsRule();
-
     @Test
-    public void testYamlStripped() throws IOException, InterruptedException, ExecutionException {
+    public void testYamlStripped(JenkinsRule jenkins) throws IOException, InterruptedException, ExecutionException {
 
         final String tap = String.join("\n",
             "1..1",
@@ -78,11 +76,11 @@ public class TestRemoveYamlIfCorrupted {
             "  ..."
         );
 
-        _test("do-not-remove-corrupted-yaml", false, tap, 0);
-        _test("remove-corrupted-yaml", true, tap, 1);
+        _test(jenkins, "do-not-remove-corrupted-yaml", false, tap, 0);
+        _test(jenkins, "remove-corrupted-yaml", true, tap, 1);
     }
 
-    private void _test(String projectName, boolean removeYamlIfCorrupted, final String tap, int expectedTotal) throws IOException, InterruptedException, ExecutionException {
+    private void _test(JenkinsRule jenkins, String projectName, boolean removeYamlIfCorrupted, final String tap, int expectedTotal) throws IOException, InterruptedException, ExecutionException {
         FreeStyleProject project = jenkins.createProject(FreeStyleProject.class, projectName);
 
         project.getBuildersList().add(new TestBuilder() {
