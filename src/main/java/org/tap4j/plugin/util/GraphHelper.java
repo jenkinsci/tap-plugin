@@ -40,8 +40,8 @@ import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.tap4j.plugin.AbstractTapProjectAction;
 import org.tap4j.plugin.TapBuildAction;
 import org.tap4j.plugin.TapResult;
@@ -68,14 +68,14 @@ public class GraphHelper
         super();
     }
 
-    public static void redirectWhenGraphUnsupported( StaplerResponse rsp,
-            StaplerRequest req ) throws IOException
+    public static void redirectWhenGraphUnsupported( StaplerResponse2 rsp,
+            StaplerRequest2 req ) throws IOException
     {
         // not available. send out error message
         rsp.sendRedirect2(req.getContextPath() + "/images/headless.png");
     }
 
-    public static JFreeChart createChart(StaplerRequest req, CategoryDataset dataset) {
+    public static JFreeChart createChart(StaplerRequest2 req, CategoryDataset dataset) {
 
       final JFreeChart chart = ChartFactory.createStackedAreaChart(
           "TAP Tests",                     // chart title
@@ -179,7 +179,7 @@ public class GraphHelper
      *            URL to get to the method from a build test result page
      * @return the chart
      */
-    public static JFreeChart createMethodChart( StaplerRequest req,
+    public static JFreeChart createMethodChart( StaplerRequest2 req,
             final CategoryDataset dataset,
             final Map<NumberOnlyBuildLabel, String> statusMap,
             final String methodUrl )

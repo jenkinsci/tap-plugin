@@ -28,13 +28,13 @@ import hudson.model.ModelObject;
 import hudson.model.Run;
 import hudson.tasks.test.TestObject;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.export.Exported;
 import org.tap4j.consumer.TapConsumer;
 import org.tap4j.consumer.TapConsumerFactory;
@@ -50,9 +50,9 @@ import org.tap4j.plugin.util.Constants;
 import org.tap4j.plugin.util.DiagnosticUtil;
 import org.tap4j.plugin.util.Util;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-import javax.servlet.ServletOutputStream;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
+import jakarta.servlet.ServletOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -250,7 +250,7 @@ public class TapResult implements ModelObject, Serializable {
     @Restricted(NoExternalUse.class) // only used from stapler/jelly
     @CheckForNull
     public Run<?,?> getOwningRun() {
-        StaplerRequest req = Stapler.getCurrentRequest();
+        StaplerRequest2 req = Stapler.getCurrentRequest2();
         if (req == null) {
             return null;
         }
@@ -356,7 +356,7 @@ public class TapResult implements ModelObject, Serializable {
         return getName();
     }
 
-    public void doDownloadAttachment(StaplerRequest request, StaplerResponse response) {
+    public void doDownloadAttachment(StaplerRequest2 request, StaplerResponse2 response) {
         final String f = request.getParameter("f");
         final String key = request.getParameter("key");
         try {

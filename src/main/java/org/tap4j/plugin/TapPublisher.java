@@ -31,10 +31,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.tap4j.model.Plan;
 import org.tap4j.model.TestSet;
@@ -304,10 +304,10 @@ public class TapPublisher extends Recorder implements MatrixAggregatable, Simple
      */
     @Override
     public void perform(
-            @Nonnull Run<?, ?> run,
-            @Nonnull FilePath workspace,
-            @Nonnull Launcher launcher,
-            @Nonnull TaskListener listener)
+            @NonNull Run<?, ?> run,
+            @NonNull FilePath workspace,
+            @NonNull Launcher launcher,
+            @NonNull TaskListener listener)
             throws InterruptedException, IOException {
 
         performImpl(run, workspace, listener);
@@ -590,7 +590,7 @@ public class TapPublisher extends Recorder implements MatrixAggregatable, Simple
             load();
         }
 
-        @Nonnull
+        @NonNull
         @Override
         public String getDisplayName() {
             return "Publish TAP Results";

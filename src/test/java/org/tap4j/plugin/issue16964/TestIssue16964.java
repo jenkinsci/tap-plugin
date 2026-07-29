@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import org.junit.Rule;
 import org.junit.Test;

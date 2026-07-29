@@ -31,8 +31,8 @@ import hudson.util.ChartUtil;
 import hudson.util.DataSetBuilder;
 import hudson.util.RunList;
 import org.jfree.chart.JFreeChart;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.tap4j.plugin.util.GraphHelper;
 
 import java.io.IOException;
@@ -110,8 +110,8 @@ public class TapProjectAction extends AbstractTapProjectAction {
         return lastBuild;
     }
 
-    public void doIndex( final StaplerRequest request,
-            final StaplerResponse response ) throws IOException {
+    public void doIndex( final StaplerRequest2 request,
+            final StaplerResponse2 response ) throws IOException {
         Run<?, ?> lastBuild = this.getLastBuildWithTap();
         if (lastBuild == null) {
             response.sendRedirect2("nodata");
@@ -129,7 +129,7 @@ public class TapProjectAction extends AbstractTapProjectAction {
      * @param rsp Stapler response
      * @throws IOException if it fails to create the graph image and serve it
      */
-    public void doGraph( final StaplerRequest req, StaplerResponse rsp ) throws IOException {
+    public void doGraph( final StaplerRequest2 req, StaplerResponse2 rsp ) throws IOException {
         if (newGraphNotNeeded(req, rsp)) {
             return;
         }
@@ -144,7 +144,7 @@ public class TapProjectAction extends AbstractTapProjectAction {
         }.doPng(req, rsp);
     }
 
-    public void doGraphMap( final StaplerRequest req, StaplerResponse rsp ) throws IOException {
+    public void doGraphMap( final StaplerRequest2 req, StaplerResponse2 rsp ) throws IOException {
         if (newGraphNotNeeded(req, rsp)) {
             return;
         }
@@ -210,7 +210,7 @@ public class TapProjectAction extends AbstractTapProjectAction {
      * @param rsp Stapler response
      * @return true, if new image does NOT need to be generated, false otherwise
      */
-    private boolean newGraphNotNeeded( final StaplerRequest req, StaplerResponse rsp ) {
+    private boolean newGraphNotNeeded( final StaplerRequest2 req, StaplerResponse2 rsp ) {
         final Calendar t = this.job.getLastCompletedBuild().getTimestamp();
         final int prevNumBuilds = requestMap.getOrDefault(req.getRequestURI(), 0);
         final int numBuilds = (int) this.job.getBuilds().stream().count();
