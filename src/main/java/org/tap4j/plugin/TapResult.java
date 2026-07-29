@@ -36,6 +36,7 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 import org.tap4j.consumer.TapConsumer;
 import org.tap4j.consumer.TapConsumerFactory;
 import org.tap4j.model.BailOut;
@@ -356,6 +357,8 @@ public class TapResult implements ModelObject, Serializable {
         return getName();
     }
 
+    @RequirePOST
+    @SuppressWarnings("lgtm[jenkins/no-permission-check]")
     public void doDownloadAttachment(StaplerRequest2 request, StaplerResponse2 response) {
         final String f = request.getParameter("f");
         final String key = request.getParameter("key");

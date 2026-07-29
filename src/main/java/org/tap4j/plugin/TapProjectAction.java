@@ -29,10 +29,10 @@ import hudson.model.Job;
 import hudson.model.Run;
 import hudson.util.ChartUtil;
 import hudson.util.DataSetBuilder;
-import hudson.util.RunList;
 import org.jfree.chart.JFreeChart;
 import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.StaplerResponse2;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 import org.tap4j.plugin.util.GraphHelper;
 
 import java.io.IOException;
@@ -110,6 +110,8 @@ public class TapProjectAction extends AbstractTapProjectAction {
         return lastBuild;
     }
 
+    @RequirePOST
+    @SuppressWarnings("lgtm[jenkins/no-permission-check]")
     public void doIndex( final StaplerRequest2 request,
             final StaplerResponse2 response ) throws IOException {
         Run<?, ?> lastBuild = this.getLastBuildWithTap();
@@ -129,6 +131,8 @@ public class TapProjectAction extends AbstractTapProjectAction {
      * @param rsp Stapler response
      * @throws IOException if it fails to create the graph image and serve it
      */
+    @RequirePOST
+    @SuppressWarnings("lgtm[jenkins/no-permission-check]")
     public void doGraph( final StaplerRequest2 req, StaplerResponse2 rsp ) throws IOException {
         if (newGraphNotNeeded(req, rsp)) {
             return;
@@ -144,6 +148,8 @@ public class TapProjectAction extends AbstractTapProjectAction {
         }.doPng(req, rsp);
     }
 
+    @RequirePOST
+    @SuppressWarnings("lgtm[jenkins/no-permission-check]")
     public void doGraphMap( final StaplerRequest2 req, StaplerResponse2 rsp ) throws IOException {
         if (newGraphNotNeeded(req, rsp)) {
             return;
