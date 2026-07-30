@@ -23,9 +23,9 @@
  */
 package org.tap4j.plugin.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -44,10 +44,10 @@ public class TestUtil {
     
     @Test
     public void testNormalizeFolders() {
-        assertEquals("Wrong normalization", "test/subdirectory/another/1.txt", Util.normalizeFolders(UNIX_WS, UNIX_FOLDER_1));
-        assertEquals("Wrong normalization", "/home/anotherfolder/test.txt", Util.normalizeFolders(UNIX_WS, UNIX_FOLDER_2));
-        assertEquals("Wrong normalization", "test/subdirectory/another/1.txt", Util.normalizeFolders(WIN_WS, WIN_FOLDER_1));
-        assertEquals("Wrong normalization", "c:/home/anotherfolder/test.txt", Util.normalizeFolders(WIN_WS, WIN_FOLDER_2));
+        assertEquals("test/subdirectory/another/1.txt", Util.normalizeFolders(UNIX_WS, UNIX_FOLDER_1), "Wrong normalization");
+        assertEquals("/home/anotherfolder/test.txt", Util.normalizeFolders(UNIX_WS, UNIX_FOLDER_2), "Wrong normalization");
+        assertEquals("test/subdirectory/another/1.txt", Util.normalizeFolders(WIN_WS, WIN_FOLDER_1), "Wrong normalization");
+        assertEquals("c:/home/anotherfolder/test.txt", Util.normalizeFolders(WIN_WS, WIN_FOLDER_2), "Wrong normalization");
     }
     
 }

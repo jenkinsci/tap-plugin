@@ -29,12 +29,12 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Result;
 import hudson.slaves.DumbSlave;
 import hudson.tasks.test.TestResult;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TouchBuilder;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.jvnet.hudson.test.recipes.LocalData;
 import org.tap4j.plugin.model.TapStreamResult;
 import org.tap4j.plugin.model.TapTestResultResult;
@@ -42,24 +42,22 @@ import org.tap4j.plugin.model.TapTestResultResult;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 
-/**
- * Tests for the {@link TapPublisher}.
- */
+@WithJenkins
 public class TapPublisherTest {
 
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
+    private JenkinsRule j;
     private FreeStyleProject project;
     private TapPublisher archiver1;
     private TapPublisher archiver2;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    public void setUp(JenkinsRule j) throws Exception {
+        this.j = j;
         project = j.createFreeStyleProject("tap");
         archiver1 = new TapPublisher(
                 "**/sample.tap",
@@ -115,6 +113,8 @@ public class TapPublisherTest {
         assertTestResultsBasic(build);
 
         try (JenkinsRule.WebClient wc = j.new WebClient()) {
+            wc.getOptions().setFetchPolyfillEnabled(true);
+
             // Check that we can access project page.
             wc.getPage(project);
 
@@ -139,7 +139,7 @@ public class TapPublisherTest {
     @LocalData
     @Test
     // getPage uses deprecation to tell users about a possibility to use relative pages (shrugs)
-    @SuppressWarnings("deprecation")
+    //@SuppressWarnings("deprecation")
     public void merged() throws Exception {
 
         project.getPublishersList().add(archiver2);
@@ -152,6 +152,8 @@ public class TapPublisherTest {
         assertTestResultsMerged(build);
 
         try (JenkinsRule.WebClient wc = j.new WebClient()) {
+            wc.getOptions().setFetchPolyfillEnabled(true);
+
             // Check that we can access project page.
             wc.getPage(project);
 
@@ -238,21 +240,21 @@ public class TapPublisherTest {
 
     private void assertTestResults(FreeStyleBuild build, int total, int failed) {
         TapTestResultAction testResultAction = build.getAction(TapTestResultAction.class);
-        assertNotNull("no TestResultAction", testResultAction);
+        assertNotNull(testResultAction, "no TestResultAction");
 
         TapStreamResult streamResult = testResultAction.getResult();
-        assertNotNull("no TestResult", streamResult);
+        assertNotNull(streamResult, "no TestResult");
 
-        assertEquals(String.format("should have %d failing test", failed), failed, testResultAction.getFailCount());
-        assertEquals(String.format("should have %d failing test", failed), failed, streamResult.getFailCount());
+        assertEquals(failed, testResultAction.getFailCount(), String.format("should have %d failing test", failed));
+        assertEquals(failed, streamResult.getFailCount(), String.format("should have %d failing test", failed));
 
-        assertEquals(String.format("should have %d total tests", total), total, testResultAction.getTotalCount());
-        assertEquals(String.format("should have %d total tests", total), total, streamResult.getTotalCount());
+        assertEquals(total, testResultAction.getTotalCount(), String.format("should have %d total tests", total));
+        assertEquals(total, streamResult.getTotalCount(), String.format("should have %d total tests", total));
 
-        assertEquals(String.format("should have %d skipped test", 1), 1, testResultAction.getSkipCount());
-        assertEquals(String.format("should have %d skipped test", 1), 1, streamResult.getSkipCount());
+        assertEquals(1, testResultAction.getSkipCount(), String.format("should have %d skipped test", 1));
+        assertEquals(1, streamResult.getSkipCount(), String.format("should have %d skipped test", 1));
 
-        assertSame("parent action should be the owning TapTestResultAction", testResultAction, streamResult.getParentAction());
+        assertSame(testResultAction, streamResult.getParentAction(), "parent action should be the owning TapTestResultAction");
     }
 
     /**

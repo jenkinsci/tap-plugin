@@ -29,15 +29,15 @@ import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.TabulatedResult;
 import hudson.tasks.test.TestObject;
 import hudson.tasks.test.TestResult;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.export.Exported;
 import org.tap4j.model.TestSet;
 import org.tap4j.plugin.TapResult;
 import org.tap4j.plugin.TapTestResultAction;
 import org.tap4j.util.StatusValues;
 
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -186,7 +186,7 @@ public class TapStreamResult extends TabulatedResult {
     }
 
     @Override
-    public Object getDynamic(String name, StaplerRequest req, StaplerResponse rsp) {
+    public Object getDynamic(String name, StaplerRequest2 req, StaplerResponse2 rsp) {
         TapTestResultResult tr = getTapTestResultResult(name);
         if (tr != null) {
             return tr;

@@ -29,7 +29,7 @@ SOFTWARE.
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.76</version>
+    <version>6.2211.v27f680c93c53</version>
     <relativePath />
   </parent>
 
@@ -40,9 +40,9 @@ SOFTWARE.
   <version>2.4.5-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
-  <name>Jenkins TAP Plugin</name>
+  <name>TAP Plugin</name>
   <description>This plugin publishes TAP test results.</description>
-  <url>https://github.com/jenkinsci/tap-plugin</url>
+  <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
 
   <licenses>
     <license>
@@ -59,9 +59,16 @@ SOFTWARE.
   <properties>
     <revision>2.4.0</revision>
     <changelist>-SNAPSHOT</changelist>
-    <jenkins.version>2.426.1</jenkins.version>
+    <jenkins.version>${jenkins.baseline}.3</jenkins.version>
+    <jenkins.baseline>2.555</jenkins.baseline>
     <gitHubRepo>jenkinsci/tap-plugin</gitHubRepo>
     <tap4j.version>4.4.2</tap4j.version>
+    <hpi.strictBundledArtifacts>true</hpi.strictBundledArtifacts>
+    <banObsoleteDependencyOverrides.skip>false</banObsoleteDependencyOverrides.skip>
+    <ban-deprecated-stapler.skip>false</ban-deprecated-stapler.skip>
+    <ban-commons-lang-2.skip>false</ban-commons-lang-2.skip>
+    <hpi.bundledArtifacts>tap4j</hpi.bundledArtifacts>
+    <ban-junit4-imports.skip >false</ban-junit4-imports.skip >
   </properties>
 
   <scm>
@@ -71,20 +78,12 @@ SOFTWARE.
     <tag>${scmTag}</tag>
   </scm>
 
-  <developers>
-    <developer>
-      <id>kinow</id>
-      <name>Bruno P. Kinoshita</name>
-      <timezone>Europe/Madrid</timezone>
-    </developer>
-  </developers>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.426.x</artifactId>
-        <version>2598.v49e2b_e68d413</version>
+        <artifactId>bom-${jenkins.baseline}.x</artifactId>
+        <version>6751.v745d6a_31066a_</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -105,9 +104,8 @@ SOFTWARE.
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.yaml</groupId>
-      <artifactId>snakeyaml</artifactId>
-      <version>2.6</version>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>snakeyaml-api</artifactId>
     </dependency>
     <!-- For handling matrix jobs -->
     <dependency>
@@ -153,14 +151,6 @@ SOFTWARE.
           <compatibleSinceVersion>2.0</compatibleSinceVersion>
         </configuration>
       </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-                <source>15</source>
-                <target>15</target>
-            </configuration>
-        </plugin>
     </plugins>
   </build>
 

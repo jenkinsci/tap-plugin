@@ -6,7 +6,7 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleProject;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 
@@ -16,10 +16,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.tap4j.model.TestResult;
 import org.tap4j.model.TestSet;
 import org.tap4j.plugin.TapPublisher;
@@ -31,13 +31,12 @@ import org.tap4j.plugin.TapTestResultAction;
  *
  * @author Jakub Podlesak
  */
+@WithJenkins
 public class TestFlattenTapResult {
 
-    @Rule
-    public JenkinsRule jenkins = new JenkinsRule();
 
     @Test
-    public void testMixedLevels() throws IOException, InterruptedException, ExecutionException {
+    public void testMixedLevels(JenkinsRule jenkins) throws IOException, InterruptedException, ExecutionException {
 
         final String tap = "1..2\n" +
                 "  1..3\n" +
@@ -47,11 +46,11 @@ public class TestFlattenTapResult {
                 "ok 1 1\n" +
                 "ok 2 2\n";
 
-        _test(tap, 4, null, false);
+        _test(jenkins, tap, 4, null, false);
     }
 
     @Test
-    public void testStripFirstLevel() throws IOException, InterruptedException, ExecutionException {
+    public void testStripFirstLevel(JenkinsRule jenkins) throws IOException, InterruptedException, ExecutionException {
 
         final String tap = "1..2\n" +
                 "  1..2\n" +
@@ -64,13 +63,13 @@ public class TestFlattenTapResult {
                 "  ok 3 .3\n" +
                 "ok 2 2\n";
 
-        _test(tap, 5, new String[] {
+        _test(jenkins, tap, 5, new String[] {
             "1.1", "1.2",
             "2.1", "2.2", "2.3"}, false);
     }
 
     @Test
-    public void testStripSecondLevel() throws IOException, InterruptedException, ExecutionException {
+    public void testStripSecondLevel(JenkinsRule jenkins) throws IOException, InterruptedException, ExecutionException {
 
         final String tap =
                 "1..1\n" +
@@ -88,14 +87,14 @@ public class TestFlattenTapResult {
                 "  ok 2 .2\n" +
                 "ok 1 1\n";
 
-        _test(tap, 7,
+        _test(jenkins, tap, 7,
                 new String[] {
                     "1.1.1", "1.1.2", "1.1.3", "1.1.4",
                     "1.2.1", "1.2.2", "1.2.3"}, false);
     }
 
     @Test
-    public void testStripSecondLevelIncompleteResult1() throws IOException, InterruptedException, ExecutionException {
+    public void testStripSecondLevelIncompleteResult1(JenkinsRule jenkins) throws IOException, InterruptedException, ExecutionException {
 
         final String tap =
                 "1..1\n" +
@@ -112,14 +111,14 @@ public class TestFlattenTapResult {
                 "  ok 2 .2\n" +
                 "ok 1 1\n";
 
-        _test(tap, 7,
+        _test(jenkins, tap, 7,
                 new String[] {
                     "1.1.1", "1.1.2", "1.1.3", "1.1 failed: 1 subtest(s) missing",
                     "1.2.1", "1.2.2", "1.2.3"}, true);
     }
 
     @Test
-    public void testStripSecondLevelIncompleteResult2() throws IOException, InterruptedException, ExecutionException {
+    public void testStripSecondLevelIncompleteResult2(JenkinsRule jenkins) throws IOException, InterruptedException, ExecutionException {
         final String tap2 =
                 "1..1\n" +
                 "  1..2\n" +
@@ -133,16 +132,16 @@ public class TestFlattenTapResult {
                 "  ok 2 .2\n" +
                 "ok 1 1\n";
 
-        _test(tap2, 6,
+        _test(jenkins, tap2, 6,
                 new String[] {
                     "1.1.1", "1.1.2", "1.1.3", "1.1 failed: 1 subtest(s) missing",
                     "1.2.1", "1.2 failed: 2 subtest(s) missing"}, true);
     }
 
     @Test
-    public void testARealTapOuptut() throws Exception {
+    public void testARealTapOuptut(JenkinsRule jenkins) throws Exception {
         final String tap = _is2String(TestFlattenTapResult.class.getResourceAsStream("/org/tap4j/plugin/tap-master-files/subtest-sample.tap"));
-        _test(tap, 48, null, true);
+        _test(jenkins, tap, 48, null, true);
     }
 
     private String _is2String(InputStream is) throws IOException {
@@ -155,7 +154,7 @@ public class TestFlattenTapResult {
         return result.toString(StandardCharsets.UTF_8);
     }
 
-    private void _test(final String tap, int expectedTotal, String[] expectedDescriptions, boolean printDescriptions) throws IOException, InterruptedException, ExecutionException {
+    private void _test(JenkinsRule jenkins, final String tap, int expectedTotal, String[] expectedDescriptions, boolean printDescriptions) throws IOException, InterruptedException, ExecutionException {
         FreeStyleProject project = jenkins.createProject(FreeStyleProject.class, "flatten-the-file");
 
         project.getBuildersList().add(new TestBuilder() {

@@ -28,10 +28,10 @@ import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.FreeStyleProject;
 import hudson.tasks.Shell;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.tap4j.plugin.TapPublisher;
 import org.tap4j.plugin.TapTestResultAction;
 
@@ -39,18 +39,17 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Tests that Jenkins can be configured to skip using the TAP Plug-in
  * when the build fails.
  */
+@WithJenkins
 public class TestIssue21456 {
 
-    public @Rule JenkinsRule jenkins = new JenkinsRule();
-
     @Test
-    public void testDurationMs() throws IOException, InterruptedException, ExecutionException {
+    public void testDurationMs(JenkinsRule jenkins) throws IOException, InterruptedException, ExecutionException {
         final FreeStyleProject project = jenkins.createFreeStyleProject("tap-bug-21456");
 
         final String tap = String.join("\n",
@@ -100,8 +99,8 @@ public class TestIssue21456 {
                 .getAction(TapTestResultAction.class);
 
         assertNull(
-                "Not supposed to have a TAP action. Should have skipped a failed build!",
-                action);
+                action,
+                "Not supposed to have a TAP action. Should have skipped a failed build!");
     }
 
 }

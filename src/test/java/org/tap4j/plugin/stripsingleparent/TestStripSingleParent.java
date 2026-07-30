@@ -6,15 +6,15 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleProject;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.tap4j.plugin.TapPublisher;
 import org.tap4j.plugin.TapResult;
 import org.tap4j.plugin.TapTestResultAction;
@@ -24,13 +24,11 @@ import org.tap4j.plugin.TapTestResultAction;
  *
  * @author Jakub Podlesak
  */
+@WithJenkins
 public class TestStripSingleParent {
 
-    @Rule
-    public JenkinsRule jenkins = new JenkinsRule();
-
     @Test
-    public void testNoEffect() throws IOException, InterruptedException, ExecutionException {
+    public void testNoEffect(JenkinsRule jenkins) throws IOException, InterruptedException, ExecutionException {
 
         final String tap = "1..2\n" +
                 "  1..3\n" +
@@ -40,11 +38,11 @@ public class TestStripSingleParent {
                 "ok 1 - 1\n" +
                 "ok 2 - 1\n";
 
-        _test(tap, 2);
+        _test(jenkins, tap, 2);
     }
 
     @Test
-    public void testStripFirstLevel() throws IOException, InterruptedException, ExecutionException {
+    public void testStripFirstLevel(JenkinsRule jenkins) throws IOException, InterruptedException, ExecutionException {
 
         final String tap = "1..1\n" +
                 "  1..3\n" +
@@ -53,11 +51,11 @@ public class TestStripSingleParent {
                 "  ok 3 1.3\n" +
                 "ok 1 - 1\n";
 
-        _test(tap, 3);
+        _test(jenkins, tap, 3);
     }
 
     @Test
-    public void testStripSecondLevel() throws IOException, InterruptedException, ExecutionException {
+    public void testStripSecondLevel(JenkinsRule jenkins) throws IOException, InterruptedException, ExecutionException {
 
         final String tap =
                 "1..1\n" +
@@ -69,10 +67,10 @@ public class TestStripSingleParent {
                 "  ok 1.1 - 1\n" +
                 "ok 1 - 1\n";
 
-        _test(tap, 3);
+        _test(jenkins, tap, 3);
     }
 
-    private void _test(final String tap, int expectedTotal) throws IOException, InterruptedException, ExecutionException {
+    private void _test(JenkinsRule jenkins, final String tap, int expectedTotal) throws IOException, InterruptedException, ExecutionException {
         FreeStyleProject project = jenkins.createProject(FreeStyleProject.class, "strip-single-parents");
 
         project.getBuildersList().add(new TestBuilder() {
