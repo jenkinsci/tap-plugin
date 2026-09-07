@@ -7,8 +7,9 @@
 
 		<j:set var="diagnostic" value="${attrs.diagnostic}" />
 		<j:set var="tapFile" value="${attrs.tapFile}" />
+		<j:set var="tapLine" value="${attrs.tapLine}" />
         
-        <j:out value="${ it.createDiagnosticTable( tapFile, diagnostic ) }"/>
+        <j:out value="${ it.createDiagnosticTable( tapFile, diagnostic, tapLine ) }"/>
         
         <!--tr>
             <table width="100%" class="yaml">
