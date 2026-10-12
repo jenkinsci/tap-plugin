@@ -6,27 +6,27 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleProject;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.tap4j.plugin.TapPublisher;
 import org.tap4j.plugin.TapTestResultAction;
 import org.tap4j.plugin.model.TapStreamResult;
 import org.tap4j.plugin.model.TapTestResultResult;
 
+@WithJenkins
 public class TestIssue16647 {
 
-    @Rule
-    public JenkinsRule jenkins = new JenkinsRule();
 
     @Test
-    public void testDurationMs() throws IOException, InterruptedException, ExecutionException {
+    public void testDurationMs(JenkinsRule jenkins) throws IOException, InterruptedException, ExecutionException {
         FreeStyleProject project = jenkins.createProject(FreeStyleProject.class, "tap-bug-16647");
 
         final String tap = "1..2\n" +

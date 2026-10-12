@@ -7,29 +7,27 @@ import hudson.model.FreeStyleBuild;
 import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleProject;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.tap4j.plugin.TapPublisher;
 import org.tap4j.plugin.TapResult;
 import org.tap4j.plugin.TapTestResultAction;
 
 
+@WithJenkins
 public class TestIssue16964 {
 
-    @Rule
-    public JenkinsRule jenkins = new JenkinsRule();
-
     @Test
-    public void testFailTestEmptyResultsAndOldReports() throws IOException, InterruptedException, ExecutionException {
+    public void testFailTestEmptyResultsAndOldReports(JenkinsRule jenkins) throws IOException, InterruptedException, ExecutionException {
         FreeStyleProject project = jenkins.createProject(FreeStyleProject.class, "tap-bug-16964");
         
         final String tap = "1..4\n" + 
@@ -72,7 +70,7 @@ public class TestIssue16964 {
                 false);
         project.getPublishersList().add(publisher);
         project.save();
-        FreeStyleBuild build = project.scheduleBuild2(0).get();
+        FreeStyleBuild build = (FreeStyleBuild) project.scheduleBuild2(0).get();
         
         TapTestResultAction action = build.getAction(TapTestResultAction.class);
         TapResult testResult = action.getTapResult();

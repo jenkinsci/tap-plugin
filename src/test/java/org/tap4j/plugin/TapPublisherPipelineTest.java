@@ -20,20 +20,18 @@
 package org.tap4j.plugin;
 
 import hudson.model.Result;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 
+@WithJenkins
 public class TapPublisherPipelineTest {
 
-    @Rule
-    public JenkinsRule j = new JenkinsRule();
-
     @Test
-    public void publishTapSymbolWorksWithValidTapFile() throws Exception {
+    public void publishTapSymbolWorksWithValidTapFile(JenkinsRule j) throws Exception {
 
         WorkflowJob job = j.createProject(WorkflowJob.class);
 
@@ -52,4 +50,3 @@ public class TapPublisherPipelineTest {
         j.assertLogContains("TAP Reports Processing: FINISH", run);
     }
 }
-

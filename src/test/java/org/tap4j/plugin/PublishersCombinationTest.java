@@ -26,8 +26,6 @@ package org.tap4j.plugin;
 import hudson.model.Project;
 import hudson.model.TopLevelItem;
 import org.htmlunit.html.HtmlPage;
-import org.junit.Rule;
-import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;

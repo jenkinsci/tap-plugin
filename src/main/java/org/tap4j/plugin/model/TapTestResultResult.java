@@ -30,9 +30,9 @@ import hudson.model.Run;
 import hudson.tasks.test.TestObject;
 import hudson.tasks.test.TestResult;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.tap4j.model.Comment;
 import org.tap4j.model.Directive;
 import org.tap4j.model.TestSet;
@@ -41,8 +41,8 @@ import org.tap4j.plugin.TapTestResultAction;
 import org.tap4j.plugin.util.Util;
 import org.tap4j.util.DirectiveValues;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -210,7 +210,7 @@ public class TapTestResultResult extends TestResult {
             buf.insert(0, myBuild.getUrl());
 
             // If we're inside a stapler request, just delegate to Hudson.Functions to get the relative path!
-            StaplerRequest req = Stapler.getCurrentRequest();
+            StaplerRequest2 req = Stapler.getCurrentRequest2();
             if (req != null && myBuild instanceof Item) {
                 buf.insert(0, '/');
                 // Ugly but I don't see how else to convince the compiler that myBuild is an Item
