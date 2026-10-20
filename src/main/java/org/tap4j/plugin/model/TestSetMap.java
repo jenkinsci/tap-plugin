@@ -23,9 +23,9 @@
  */
 package org.tap4j.plugin.model;
 
-import java.io.Serializable;
-
 import org.tap4j.model.TestSet;
+
+import java.io.Serializable;
 
 
 /**

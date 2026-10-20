@@ -23,14 +23,9 @@
  */
 package org.tap4j.plugin;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Logger;
-
 import edu.umd.cs.findbugs.annotations.NonNull;
+import hudson.FilePath;
+import hudson.model.Run;
 import org.apache.commons.io.FileUtils;
 import org.tap4j.model.Plan;
 import org.tap4j.model.TestResult;
@@ -42,8 +37,13 @@ import org.tap4j.plugin.model.TestSetMap;
 import org.tap4j.util.DirectiveValues;
 import org.tap4j.util.StatusValues;
 
-import hudson.FilePath;
-import hudson.model.Run;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.Charset;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Executes remote TAP Stream retrieval and execution.
@@ -185,7 +185,7 @@ public class TapParser {
 
                     if (this.outputTapToConsole) {
                         try {
-                            log(FileUtils.readFileToString(tapFile));
+                            log(FileUtils.readFileToString(tapFile, Charset.defaultCharset()));
                         } catch (RuntimeException | IOException re) {
                             log(re);
                         }

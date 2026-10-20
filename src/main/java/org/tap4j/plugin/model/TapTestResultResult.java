@@ -23,6 +23,8 @@
  */
 package org.tap4j.plugin.model;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import hudson.Functions;
 import hudson.model.AbstractBuild;
 import hudson.model.Item;
@@ -41,8 +43,6 @@ import org.tap4j.plugin.TapTestResultAction;
 import org.tap4j.plugin.util.Util;
 import org.tap4j.util.DirectiveValues;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

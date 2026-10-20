@@ -1,16 +1,10 @@
 package org.tap4j.plugin.issue16647;
 
 import hudson.Launcher;
+import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
-import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleProject;
-
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -19,6 +13,11 @@ import org.tap4j.plugin.TapPublisher;
 import org.tap4j.plugin.TapTestResultAction;
 import org.tap4j.plugin.model.TapStreamResult;
 import org.tap4j.plugin.model.TapTestResultResult;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestIssue16647 {
 

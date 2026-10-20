@@ -26,12 +26,8 @@ package org.tap4j.plugin;
 import hudson.model.Project;
 import hudson.model.TopLevelItem;
 import org.htmlunit.html.HtmlPage;
-import org.junit.Rule;
-import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
-import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.jvnet.hudson.test.recipes.LocalData;
 
 @Disabled("Failing on newer versions of Jenkins, 2.414+, but working when ran locally. TODO: fix it.")
 public class PublishersCombinationTest {
