@@ -29,7 +29,6 @@ import hudson.model.Job;
 import hudson.model.Run;
 import hudson.util.ChartUtil;
 import hudson.util.DataSetBuilder;
-import hudson.util.RunList;
 import org.jfree.chart.JFreeChart;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;

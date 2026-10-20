@@ -23,6 +23,8 @@
  */
 package org.tap4j.plugin;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import 	edu.umd.cs.findbugs.annotations.Nullable;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -42,6 +44,7 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.tasks.test.TestResultAggregator;
+import jakarta.annotation.Nonnull;
 import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang3.BooleanUtils;
 import org.jenkinsci.Symbol;
@@ -51,8 +54,6 @@ import org.tap4j.model.TestSet;
 import org.tap4j.plugin.model.TestSetMap;
 import org.tap4j.plugin.util.Constants;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -302,10 +303,10 @@ public class TapPublisher extends Recorder implements MatrixAggregatable, Simple
      */
     @Override
     public void perform(
-            @Nonnull Run<?, ?> run,
-            @Nonnull FilePath workspace,
-            @Nonnull Launcher launcher,
-            @Nonnull TaskListener listener)
+            @NonNull Run<?, ?> run,
+            @NonNull FilePath workspace,
+            @NonNull Launcher launcher,
+            @NonNull TaskListener listener)
             throws InterruptedException, IOException {
 
         performImpl(run, workspace, listener);

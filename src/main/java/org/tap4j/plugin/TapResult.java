@@ -23,6 +23,8 @@
  */
 package org.tap4j.plugin;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import hudson.FilePath;
 import hudson.model.ModelObject;
 import hudson.model.Run;
@@ -50,8 +52,6 @@ import org.tap4j.plugin.util.Constants;
 import org.tap4j.plugin.util.DiagnosticUtil;
 import org.tap4j.plugin.util.Util;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import javax.servlet.ServletOutputStream;
 import java.io.File;
 import java.io.IOException;

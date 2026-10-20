@@ -23,11 +23,11 @@
  */
 package org.tap4j.plugin;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
 import hudson.model.Action;
 import hudson.model.Run;
 import org.kohsuke.stapler.StaplerProxy;
 
-import javax.annotation.Nullable;
 import java.io.Serializable;
 
 /**

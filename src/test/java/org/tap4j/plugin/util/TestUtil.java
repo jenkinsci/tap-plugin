@@ -23,9 +23,9 @@
  */
 package org.tap4j.plugin.util;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 
 /**

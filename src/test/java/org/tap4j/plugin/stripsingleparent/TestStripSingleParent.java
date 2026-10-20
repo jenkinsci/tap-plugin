@@ -1,16 +1,10 @@
 package org.tap4j.plugin.stripsingleparent;
 
 import hudson.Launcher;
+import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.FreeStyleBuild;
-import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleProject;
-
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -18,6 +12,11 @@ import org.jvnet.hudson.test.TestBuilder;
 import org.tap4j.plugin.TapPublisher;
 import org.tap4j.plugin.TapResult;
 import org.tap4j.plugin.TapTestResultAction;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * At least basic tests for strip single parent configuration option.
