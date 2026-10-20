@@ -38,7 +38,7 @@ SOFTWARE.
 
     <groupId>org.tap4j</groupId>
     <artifactId>tap</artifactId>
-    <version>2.4.5-SNAPSHOT</version>
+    <version>${revision}${changelist}</version>
     <packaging>hpi</packaging>
 
     <name>Jenkins TAP Plugin</name>
@@ -60,7 +60,7 @@ SOFTWARE.
     </issueManagement>
 
     <properties>
-        <revision>2.4.0</revision>
+        <revision>2.5.0</revision>
         <changelist>-SNAPSHOT</changelist>
         <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
         <jenkins.baseline>2.504</jenkins.baseline>
@@ -159,12 +159,6 @@ SOFTWARE.
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-basic-steps</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>6.4.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

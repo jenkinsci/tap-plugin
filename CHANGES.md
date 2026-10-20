@@ -1,11 +1,12 @@
 # TAP plug-in changelog
 
-## Version 2.4.5 (2026/??/??)
+## Version 2.5.0 (2026/??/??)
 
 - build(deps): bump org.yaml:snakeyaml from 2.2 to 2.7
 - [GH-44](https://github.com/jenkinsci/tap-plugin/pull/44): Add @Symbol("publishTap") to TapPublisher Descriptor and pipeline test (thanks @0xShubhamSolanki)
 - [JENKINS-76360](https://issues.jenkins.io/browse/JENKINS-76360) Fix NPE on TAP Test Results screen (thanks @janfaracik)
 - Migrated oac.lang imports to oac.lang3 to solve Jenkins security scan issues #50
+- Moved issues from JIRA to GitHub https://github.com/jenkins-infra/repository-permissions-updater/pull/5397
 - Organised Java imports
 - Replaced `javax.annotation` imports by `edu.umd.cs.findbugs.annotations`
 - Updated Jenkins version (was `2.426.1` is `2.504.3`) and `pom.xml` #50
