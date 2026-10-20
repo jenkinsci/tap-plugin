@@ -30,7 +30,7 @@ import hudson.model.Run;
 import hudson.tasks.test.TestObject;
 import hudson.tasks.test.TestResult;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.tap4j.model.Comment;
