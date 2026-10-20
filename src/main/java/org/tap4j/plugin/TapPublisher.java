@@ -23,25 +23,6 @@
  */
 package org.tap4j.plugin;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.apache.commons.lang.BooleanUtils;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.tap4j.model.Plan;
-import org.tap4j.model.TestSet;
-import org.tap4j.plugin.model.TestSetMap;
-import org.tap4j.plugin.util.Constants;
-import org.jenkinsci.Symbol;
-
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -62,6 +43,23 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.tasks.test.TestResultAggregator;
 import jenkins.tasks.SimpleBuildStep;
+import org.apache.commons.lang3.BooleanUtils;
+import org.jenkinsci.Symbol;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.tap4j.model.Plan;
+import org.tap4j.model.TestSet;
+import org.tap4j.plugin.model.TestSetMap;
+import org.tap4j.plugin.util.Constants;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Publishes TAP results in Jenkins builds.

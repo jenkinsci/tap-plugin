@@ -24,14 +24,13 @@
 package org.tap4j.plugin.util;
 
 import hudson.Functions;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * Used to create YAML view. FIXME: Figure out another way to write HTML (send JSON to Stapler/Groovy/etc.?).
@@ -82,7 +81,7 @@ public class DiagnosticUtil {
             sb.append("<tr>");
 
             sb.append("<td width='5%' class='hidden'> </td>".repeat(Math.max(0, depth)));
-            sb.append("<td style=\"width: auto;\">").append(StringEscapeUtils.escapeHtml(key)).append("</td>");
+            sb.append("<td style=\"width: auto;\">").append(StringEscapeUtils.escapeHtml4(key)).append("</td>");
 
             if(renderType == RENDER_TYPE.IMAGE && key.equals("File-Content")) {
                 final Object o = diagnostic.get("File-Name");
@@ -95,7 +94,7 @@ public class DiagnosticUtil {
                         "&key=",
                         Functions.htmlAttributeEscape(downloadKey),
                         "'>",
-                        StringEscapeUtils.escapeHtml(fileName),
+                        StringEscapeUtils.escapeHtml4(fileName),
                         "</a></td>"
                 ).forEach(sb::append);
             } else if (renderType == RENDER_TYPE.TEXT && value instanceof java.util.Map) {
