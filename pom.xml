@@ -113,6 +113,11 @@ SOFTWARE.
     </dependencyManagement>
 
     <dependencies>
+        <!-- Provide Lang3 through its Jenkins API plugin. Version managed by the BOM. -->
+        <dependency>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>commons-lang3-api</artifactId>
+        </dependency>
         <!-- The TAP parser -->
         <dependency>
             <groupId>org.tap4j</groupId>

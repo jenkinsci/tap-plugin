@@ -2,6 +2,8 @@
 
 ## Version 2.5.0 (2026/??/??)
 
+- [GH-184](https://github.com/jenkinsci/tap-plugin/issues/184): Complete Commons Lang3 migration for diagnostic values and declare the commons-lang3-api plugin dependency.
+
 - build(deps): bump org.yaml:snakeyaml from 2.2 to 2.7
 - [GH-44](https://github.com/jenkinsci/tap-plugin/pull/44): Add @Symbol("publishTap") to TapPublisher Descriptor and pipeline test (thanks @0xShubhamSolanki)
 - [JENKINS-76360](https://issues.jenkins.io/browse/JENKINS-76360) Fix NPE on TAP Test Results screen (thanks @janfaracik)
