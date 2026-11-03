@@ -101,7 +101,7 @@ public class DiagnosticUtil {
                 sb.append("<td> </td>");
                 createDiagnosticTableRecursively(tapFile, key, (java.util.Map) value, sb, (depth + 1));
             } else {
-                sb.append("<td><pre>").append(org.apache.commons.lang.StringEscapeUtils.escapeHtml(value.toString())).append("</pre></td>");
+                sb.append("<td><pre>").append(StringEscapeUtils.escapeHtml4(value.toString())).append("</pre></td>");
             }
             sb.append("</tr>");
         }
