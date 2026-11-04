@@ -172,6 +172,11 @@ SOFTWARE.
             <version>4.51.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.jenkins.plugins</groupId>
+            <artifactId>prism-api</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
