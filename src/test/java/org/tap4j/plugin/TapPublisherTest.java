@@ -62,40 +62,40 @@ public class TapPublisherTest {
     public void setUp() throws Exception {
         project = j.createFreeStyleProject("tap");
         archiver1 = new TapPublisher(
-                "**/sample.tap",
-                true,
-                true,
-                false,
-                true,
-                true,
-                false,
-                true,
-                true,
-                true,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false
+            "**/sample.tap",
+            true,
+            true,
+            false,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
         );
         archiver2 = new TapPublisher(
-                "**/more.tap",
-                true,
-                true,
-                false,
-                true,
-                true,
-                false,
-                true,
-                true,
-                true,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false
+            "**/more.tap",
+            true,
+            true,
+            false,
+            true,
+            true,
+            false,
+            true,
+            true,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
         );
         project.getPublishersList().add(archiver1);
 
@@ -115,6 +115,9 @@ public class TapPublisherTest {
         assertTestResultsBasic(build);
 
         try (JenkinsRule.WebClient wc = j.new WebClient()) {
+            // To fix the error: ReferenceError: "fetch" is not defined.
+            wc.getOptions().setFetchPolyfillEnabled(true);
+
             // Check that we can access project page.
             wc.getPage(project);
 
@@ -152,6 +155,9 @@ public class TapPublisherTest {
         assertTestResultsMerged(build);
 
         try (JenkinsRule.WebClient wc = j.new WebClient()) {
+            // To fix the error: ReferenceError: "fetch" is not defined.
+            wc.getOptions().setFetchPolyfillEnabled(true);
+
             // Check that we can access project page.
             wc.getPage(project);
 
@@ -173,9 +179,9 @@ public class TapPublisherTest {
     @SuppressWarnings("unchecked")
     private String getNthResultPathFromAllTestsTable(FreeStyleBuild build, int testNumber) {
         Iterator<TapTestResultResult> it = (Iterator<TapTestResultResult>) build
-                .getActions(TapTestResultAction.class)
-                .get(0)
-                .getResult().getChildren().iterator();
+            .getActions(TapTestResultAction.class)
+            .get(0)
+            .getResult().getChildren().iterator();
 
         int count = 0;
         TapTestResultResult result = null;
@@ -196,9 +202,9 @@ public class TapPublisherTest {
     private String getNthResultPathFromFailedTestsTable(FreeStyleBuild build) {
 
         TapStreamResult testObject = build
-                .getActions(TapTestResultAction.class)
-                .get(0)
-                .getResult();
+            .getActions(TapTestResultAction.class)
+            .get(0)
+            .getResult();
 
         int count = 0;
         TestResult result = null;
