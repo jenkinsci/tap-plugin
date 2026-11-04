@@ -4,7 +4,7 @@
 [![GitHub release](https://img.shields.io/github/release/jenkinsci/tap.svg?label=changelog)](https://github.com/jenkinsci/tap-plugin/blob/master/CHANGES.md)
 [![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/tap.svg?color=blue)](https://plugins.jenkins.io/tap)
 [![Jenkins](https://ci.jenkins.io/job/Plugins/job/tap-plugin/job/master/badge/icon?subject=Jenkins%20CI)](https://ci.jenkins.io/job/Plugins/job/tap-plugin/job/master/)
-[![JIRA issues](https://img.shields.io/static/v1?label=Issue%20tracking&message=component:%20tap-plugin&color=blue)](https://issues.jenkins.io/browse/JENKINS-64962?jql=component%20%3D%20%27tap-plugin%27%20AND%20resolution%20IS%20EMPTY%20ORDER%20BY%20updated%20DESC)
+[![GitHub issues](https://img.shields.io/static/v1?label=Issue%20tracking&message=component:%20tap-plugin&color=blue)](https://github.com/jenkinsci/tap-plugin/issues)
 
 ## Overview
 
