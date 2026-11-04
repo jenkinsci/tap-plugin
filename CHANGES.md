@@ -2,9 +2,10 @@
 
 ## Version 2.5.0 (2026/??/??)
 
-- [GH-184](https://github.com/jenkinsci/tap-plugin/issues/184): Complete Commons Lang3 migration for diagnostic values and declare the commons-lang3-api plugin dependency.
-
+- [GH-184](https://github.com/jenkinsci/tap-plugin/issues/184): Complete Commons Lang3 migration for diagnostic values and declare the commons-lang3-api plugin dependency (thanks @harsharajdhrd).
+- build(deps): bump org.jenkins-ci.plugins:plugin from 6.2236.v12dd4c483242 to 6.2250.va_d01d559a_209
 - build(deps): bump org.yaml:snakeyaml from 2.2 to 2.7
+- build(deps-dev): bump org.seleniumhq.selenium:selenium-java from 4.51.0 to 4.52.0
 - [GH-44](https://github.com/jenkinsci/tap-plugin/pull/44): Add @Symbol("publishTap") to TapPublisher Descriptor and pipeline test (thanks @0xShubhamSolanki)
 - [JENKINS-76360](https://issues.jenkins.io/browse/JENKINS-76360) Fix NPE on TAP Test Results screen (thanks @janfaracik)
 - Migrated oac.lang imports to oac.lang3 to solve Jenkins security scan issues #50
