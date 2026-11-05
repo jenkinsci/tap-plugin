@@ -2,17 +2,17 @@
  * The MIT License
  *
  * Copyright (c) 2011 Bruno P. Kinoshita
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,14 +29,15 @@ import hudson.FilePath;
 import hudson.model.ModelObject;
 import hudson.model.Run;
 import hudson.tasks.test.TestObject;
+import jakarta.servlet.ServletOutputStream;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.export.Exported;
 import org.tap4j.consumer.TapConsumer;
 import org.tap4j.consumer.TapConsumerFactory;
@@ -52,9 +53,9 @@ import org.tap4j.plugin.util.Constants;
 import org.tap4j.plugin.util.DiagnosticUtil;
 import org.tap4j.plugin.util.Util;
 
-import javax.servlet.ServletOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,39 +64,51 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * @author Bruno P. Kinoshita - <a href="https://kinoshita.eti.br">...</a>
+ * Represents the results of parsing TAP test output.
+ *
+ * @author Bruno P. Kinoshita
  * @since 1.0
  */
 public class TapResult implements ModelObject, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 4343399327336076951L;
 
     private static final Logger LOGGER = Logger.getLogger(TapResult.class.getName());
 
     private static final String DURATION_KEY = "duration_ms";
 
-    private transient Run<?, ?> build;
-    private final  List<TestSetMap> testSets;
-    private final  List<TestSetMap> parseErrorTestSets;
-    private int failed = 0;
-    private int passed = 0;
-    private int skipped = 0;
-    private int todo = 0;
-    private int bailOuts = 0;
-    private int total = 0;
-    private float duration = 0.0f;
+    private final List<TestSetMap> testSets;
+    private final List<TestSetMap> parseErrorTestSets;
     private final String name;
     private final Boolean todoIsFailure;
     private final Boolean includeCommentDiagnostics;
     private final Boolean validateNumberOfTests;
+
+    private transient Run<?, ?> build;
+
+    private int failed;
+    private int passed;
+    private int skipped;
+    private int todo;
+    private int bailOuts;
+    private int total;
+    private float duration;
+
     private Boolean showOnlyFailures = Boolean.FALSE;
 
-    public TapResult(String name, Run<?, ?> owner, List<TestSetMap> testSets, Boolean todoIsFailure,
-            Boolean includeCommentDiagnostics, Boolean validateNumberOfTests) {
+    public TapResult(
+        String name,
+        Run<?, ?> owner,
+        List<TestSetMap> testSets,
+        Boolean todoIsFailure,
+        Boolean includeCommentDiagnostics,
+        Boolean validateNumberOfTests) {
+
         this.name = name;
         this.build = owner;
-        this.testSets = this.filterTestSet(testSets);
-        this.parseErrorTestSets = this.filterParseErrorTestSets(testSets);
+        this.testSets = filterTestSet(testSets);
+        this.parseErrorTestSets = filterParseErrorTestSets(testSets);
         this.todoIsFailure = todoIsFailure;
         this.includeCommentDiagnostics = includeCommentDiagnostics;
         this.validateNumberOfTests = validateNumberOfTests;
@@ -105,8 +118,13 @@ public class TapResult implements ModelObject, Serializable {
         List<TestSetMap> mergedTestSets = new ArrayList<>(getTestSets());
         mergedTestSets.addAll(testSets);
 
-        TapResult tapResult = new TapResult(this.getName(), this.getOwner(), mergedTestSets, this.getTodoIsFailure(),
-            this.getIncludeCommentDiagnostics(), this.getValidateNumberOfTests());
+        TapResult tapResult = new TapResult(
+            getName(),
+            getOwner(),
+            mergedTestSets,
+            getTodoIsFailure(),
+            getIncludeCommentDiagnostics(),
+            getValidateNumberOfTests());
 
         tapResult.setShowOnlyFailures(getShowOnlyFailures());
         return tapResult;
@@ -120,16 +138,10 @@ public class TapResult implements ModelObject, Serializable {
         this.showOnlyFailures = showOnlyFailures;
     }
 
-    /**
-     * @return the todoIsFailure
-     */
     public Boolean getTodoIsFailure() {
         return todoIsFailure;
     }
 
-    /**
-     * @return the includeCommentDiagnostics
-     */
     public Boolean getIncludeCommentDiagnostics() {
         return includeCommentDiagnostics == null || includeCommentDiagnostics;
     }
@@ -138,58 +150,58 @@ public class TapResult implements ModelObject, Serializable {
         return validateNumberOfTests != null && validateNumberOfTests;
     }
 
-    /**
-     * @param testSets Unfiltered test sets
-     * @return Test sets that failed to parse
-     */
     private List<TestSetMap> filterParseErrorTestSets(List<TestSetMap> testSets) {
-        if (this.build == null) {
+        if (build == null) {
             return Collections.emptyList();
         }
-        final List<TestSetMap> filtered = new ArrayList<>();
+
+        List<TestSetMap> filtered = new ArrayList<>();
+
         for (TestSetMap testSet : testSets) {
             if (testSet instanceof ParseErrorTestSetMap) {
-                String rootDir = build.getRootDir().getAbsolutePath();
-                try {
-                    rootDir = new File(build.getRootDir()
-                            .getCanonicalPath(), Constants.TAP_DIR_NAME).getAbsolutePath();
-                } catch (IOException e) {
-                    LOGGER.warning(e.getMessage());
-                }
-                filtered.add(
-                        new TestSetMap(Util.normalizeFolders(rootDir, testSet.getFileName()), testSet.getTestSet()));
+                filtered.add(normalizeTestSetPath(testSet));
             }
         }
+
         return filtered;
+    }
+
+    private List<TestSetMap> filterTestSet(List<TestSetMap> testSets) {
+        if (build == null) {
+            return Collections.emptyList();
+        }
+
+        List<TestSetMap> filtered = new ArrayList<>();
+
+        for (TestSetMap testSet : testSets) {
+            if (!(testSet instanceof ParseErrorTestSetMap)) {
+                filtered.add(normalizeTestSetPath(testSet));
+            }
+        }
+
+        return filtered;
+    }
+
+    private TestSetMap normalizeTestSetPath(TestSetMap testSet) {
+        String rootDir = build.getRootDir().getAbsolutePath();
+
+        try {
+            rootDir = new File(
+                build.getRootDir().getCanonicalPath(),
+                Constants.TAP_DIR_NAME).getAbsolutePath();
+        } catch (IOException e) {
+            LOGGER.warning(e.getMessage());
+        }
+
+        return new TestSetMap(
+            Util.normalizeFolders(rootDir, testSet.getFileName()),
+            testSet.getTestSet());
     }
 
     /**
-     * @param testSets Unfiltered test sets
-     * @return Test sets that didn't fail to parse
+     * Calculates the test result statistics.
      */
-    private List<TestSetMap> filterTestSet(List<TestSetMap> testSets) {
-        if (this.build == null) {
-            return Collections.emptyList();
-        }
-        final List<TestSetMap> filtered = new ArrayList<>();
-        for (TestSetMap testSet : testSets) {
-            if (!(testSet instanceof ParseErrorTestSetMap)) {
-                String rootDir = build.getRootDir().getAbsolutePath();
-                try {
-                    rootDir = new File(build.getRootDir()
-                            .getCanonicalPath(), Constants.TAP_DIR_NAME).getAbsolutePath();
-                } catch (IOException e) {
-                    LOGGER.warning(e.getMessage());
-                }
-                filtered.add(
-                        new TestSetMap(Util.normalizeFolders(rootDir, testSet.getFileName()), testSet.getTestSet()));
-            }
-        }
-        return filtered;
-    }
-
     public void tally() {
-
         failed = 0;
         passed = 0;
         skipped = 0;
@@ -207,236 +219,246 @@ public class TapResult implements ModelObject, Serializable {
             Plan plan = realTestSet.getPlan();
 
             if (plan != null && plan.isSkip()) {
-                this.skipped += testResults.size();
+                skipped += testResults.size();
             } else {
                 for (TestResult testResult : testResults) {
                     if (Util.isSkipped(testResult)) {
-                        skipped += 1;
+                        skipped++;
                     } else if (Util.isFailure(testResult, todoIsFailure)) {
-                        failed += 1;
+                        failed++;
                     } else if (Util.isTodo(testResult)) {
-                        todo += 1;
+                        todo++;
                     } else {
-                        passed += 1;
+                        passed++;
                     }
-                    // FIXME: code duplication. Refactor it and TapTestResultResult
+
                     Map<String, Object> diagnostic = testResult.getDiagnostic();
+
                     if (diagnostic != null && !diagnostic.isEmpty()) {
-                        Object duration = diagnostic.get(DURATION_KEY);
-                        if (duration != null) {
-                            float durationMS = Float.parseFloat(duration.toString());
-                            this.duration += durationMS;
+                        Object durationValue = diagnostic.get(DURATION_KEY);
+
+                        if (durationValue != null) {
+                            duration += Float.parseFloat(durationValue.toString());
                         }
                     }
                 }
             }
 
-            this.bailOuts += realTestSet.getNumberOfBailOuts();
+            bailOuts += realTestSet.getNumberOfBailOuts();
         }
     }
 
     @Nullable
     public Run<?, ?> getOwner() {
-        return this.build;
+        return build;
     }
 
-    /**
-     * @param owner the owner to set
-     */
     public void setOwner(Run<?, ?> owner) {
         this.build = owner;
     }
 
-    @Restricted(NoExternalUse.class) // only used from stapler/jelly
+    @Restricted(NoExternalUse.class)
     @CheckForNull
-    public Run<?,?> getOwningRun() {
-        StaplerRequest req = Stapler.getCurrentRequest();
+    public Run<?, ?> getOwningRun() {
+        StaplerRequest2 req = Stapler.getCurrentRequest2();
+
         if (req == null) {
             return null;
         }
+
         return req.findAncestorObject(Run.class);
     }
 
     public List<TestSetMap> getTestSets() {
-        return this.testSets;
+        return testSets;
     }
 
     public boolean isEmptyTestSet() {
-        return this.testSets.isEmpty();
+        return testSets.isEmpty();
     }
 
-    /**
-     * @return the parseErrorTestSets
-     */
     public List<TestSetMap> getParseErrorTestSets() {
         return parseErrorTestSets;
     }
 
     public boolean hasParseErrors() {
-        return !this.parseErrorTestSets.isEmpty();
+        return !parseErrorTestSets.isEmpty();
     }
 
     public int getFailed() {
-        return this.failed;
+        return failed;
     }
 
     public int getSkipped() {
-        return this.skipped;
+        return skipped;
     }
 
     public int getToDo() {
-        return this.todo;
+        return todo;
     }
 
     public int getPassed() {
-        return this.passed;
+        return passed;
     }
 
     public int getBailOuts() {
-        return this.bailOuts;
+        return bailOuts;
     }
 
     public int getTotal() {
-        return this.total;
+        return total;
     }
 
     public float getDuration() {
-        return this.duration;
+        return duration;
     }
 
-    /**
-     * Called from TapResult/index.jelly
-     * @param tapFile location of TAP file
-     * @param diagnostic TAP diagnostics
-     * @return diagnostic table
-     */
-    public String createDiagnosticTable(String tapFile, Map<String, Object> diagnostic) {
+    public String createDiagnosticTable(
+        String tapFile,
+        Map<String, Object> diagnostic) {
         return DiagnosticUtil.createDiagnosticTable(tapFile, diagnostic);
     }
 
-    /**
-     * @param tapResult the tap result object
-     * @return {@code true} if the object is not null and an instance of {@link TestResult}
-     */
     public boolean isTestResult(Object tapResult) {
-        return (tapResult instanceof TestResult);
+        return tapResult instanceof TestResult;
     }
 
-    /**
-     * @param tapResult the tap result object
-     * @return {@code true} if the object is not null and an instance of {@link BailOut}
-     */
     public boolean isBailOut(Object tapResult) {
-        return (tapResult instanceof BailOut);
+        return tapResult instanceof BailOut;
     }
 
     public boolean isComment(Object tapResult) {
-        return (tapResult instanceof Comment);
+        return tapResult instanceof Comment;
     }
 
     public String escapeHTML(String html) {
-        return StringUtils.replaceEach(html, new String[] { "&", "\"", "<", ">" },
-                new String[] { "&amp;", "&quot;", "&lt;", "&gt;" });
+        return StringUtils.replaceEach(
+            html,
+            new String[]{"&", "\"", "<", ">"},
+            new String[]{"&amp;", "&quot;", "&lt;", "&gt;"});
     }
 
-    /**
-     * @return the name
-     */
     @Exported(visibility = 999)
     public String getName() {
         return name;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see hudson.model.ModelObject#getDisplayName()
-     */
+    @Override
     public String getDisplayName() {
         return getName();
     }
 
-    public void doDownloadAttachment(StaplerRequest request, StaplerResponse response) {
-        final String f = request.getParameter("f");
+    public void doDownloadAttachment(
+        StaplerRequest2 request,
+        StaplerResponse2 response) {
+
+        final String fileName = request.getParameter("f");
         final String key = request.getParameter("key");
+
         try {
-            final ServletOutputStream sos = response.getOutputStream();
+            ServletOutputStream sos = response.getOutputStream();
 
             if (build == null) {
                 sos.println("No build located in Jenkins. Cannot download attachment.");
-            } else {
-                FilePath parent = new FilePath(new File(build.getRootDir(), Constants.TAP_DIR_NAME));
-                FilePath tapDir = parent.child(TestObject.safe(f));
-
-                if (tapDir.exists()) {
-                    String tapStream = tapDir.readToString();
-                    TapConsumer consumer = TapConsumerFactory.makeTap13YamlConsumer();
-                    TestSet ts = consumer.load(tapStream);
-
-                    TapAttachment attachment = getAttachment(ts, key);
-                    if (attachment != null) {
-                        response.setContentType("application/force-download");
-                        // response.setContentLength((int)tapDir.length());
-                        response.setContentLength(attachment.getSize());
-                        response.setHeader("Content-Transfer-Encoding", "binary");
-                        response.setHeader("Content-Disposition",
-                                "attachment; filename=\"" + attachment.getFileName() + "\"");// fileName);
-
-                        sos.write(attachment.getContent());
-                        sos.print('\n');
-                    } else {
-                        sos.println("Couldn't locate attachment in YAMLish: " + f);
-                    }
-                } else {
-                    sos.println("Couldn't read FilePath.");
-                }
+                return;
             }
+
+            FilePath parent = new FilePath(
+                new File(build.getRootDir(), Constants.TAP_DIR_NAME));
+
+            FilePath tapFile = parent.child(TestObject.safe(fileName));
+
+            if (!tapFile.exists()) {
+                sos.println("Couldn't read FilePath.");
+                return;
+            }
+
+            String tapStream = tapFile.readToString();
+
+            TapConsumer consumer = TapConsumerFactory.makeTap13YamlConsumer();
+            TestSet testSet = consumer.load(tapStream);
+
+            TapAttachment attachment = getAttachment(testSet, key);
+
+            if (attachment == null) {
+                sos.println("Couldn't locate attachment in YAMLish: " + fileName);
+                return;
+            }
+
+            response.setContentType("application/force-download");
+            response.setContentLength(attachment.getSize());
+            response.setHeader("Content-Transfer-Encoding", "binary");
+            response.setHeader(
+                "Content-Disposition",
+                "attachment; filename=\"" + attachment.getFileName() + "\"");
+
+            sos.write(attachment.getContent());
+            sos.print('\n');
+
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.warning("Unable to download TAP attachment: " + e.getMessage());
+            Thread.currentThread().interrupt();
         }
     }
 
-    private TapAttachment getAttachment(TestSet ts, String key) {
-        for (TestResult tr : ts.getTestResults()) {
-            Map<String, Object> diagnostics = tr.getDiagnostic();
+    private TapAttachment getAttachment(TestSet testSet, String key) {
+        for (TestResult testResult : testSet.getTestResults()) {
+            Map<String, Object> diagnostics = testResult.getDiagnostic();
+
             if (diagnostics != null && !diagnostics.isEmpty()) {
-                TapAttachment attachment = recursivelySearch(diagnostics, null, key);
+                TapAttachment attachment = recursivelySearch(
+                    diagnostics, null, key);
+
                 if (attachment != null) {
                     return attachment;
                 }
             }
         }
+
         return null;
     }
 
     @SuppressWarnings("unchecked")
-    private TapAttachment recursivelySearch(Map<String, Object> diagnostics, String parentKey, String key) {
+    private TapAttachment recursivelySearch(
+        Map<String, Object> diagnostics,
+        String parentKey,
+        String key) {
+
         for (Map.Entry<String, Object> entry : diagnostics.entrySet()) {
-            final String diagnosticKey = entry.getKey();
-            final Object value = entry.getValue();
-            if (value != null) {
-                if (value instanceof Map<?, ?>) {
-                    TapAttachment attachment = recursivelySearch((Map<String, Object>) value, diagnosticKey, key);
-                    if (attachment != null) {
-                        return attachment;
-                    }
-                } else {
-                    if (parentKey != null && parentKey.equals(key)) {
-                        Object o = diagnostics.get("File-Content");
-                        if (o == null)
-                            o = diagnostics.get("File-content");
-                        if (o instanceof String)
-                            return new TapAttachment(Base64.decodeBase64((String) o), diagnostics);
-                    } else if (diagnosticKey.equalsIgnoreCase("file-name") && value.equals(key)) {
-                        Object o = diagnostics.get("File-Content");
-                        if (o == null)
-                            o = diagnostics.get("File-content");
-                        if (o instanceof String)
-                            return new TapAttachment(Base64.decodeBase64((String) o), diagnostics);
-                    }
+            String diagnosticKey = entry.getKey();
+            Object value = entry.getValue();
+
+            if (value == null) {
+                continue;
+            }
+
+            if (value instanceof Map<?, ?>) {
+                TapAttachment attachment = recursivelySearch(
+                    (Map<String, Object>) value,
+                    diagnosticKey,
+                    key);
+
+                if (attachment != null) {
+                    return attachment;
+                }
+            } else if ((parentKey != null && parentKey.equals(key))
+                || (diagnosticKey.equalsIgnoreCase("file-name")
+                && value.equals(key))) {
+
+                Object content = diagnostics.get("File-Content");
+
+                if (content == null) {
+                    content = diagnostics.get("File-content");
+                }
+
+                if (content instanceof String) {
+                    return new TapAttachment(
+                        Base64.decodeBase64((String) content),
+                        diagnostics);
                 }
             }
         }
+
         return null;
     }
 }

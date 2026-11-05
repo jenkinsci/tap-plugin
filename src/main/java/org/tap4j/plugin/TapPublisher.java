@@ -24,7 +24,7 @@
 package org.tap4j.plugin;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import 	edu.umd.cs.findbugs.annotations.Nullable;
+import edu.umd.cs.findbugs.annotations.Nullable;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -141,6 +141,19 @@ public class TapPublisher extends Recorder implements MatrixAggregatable, Simple
     }
 
     /**
+     * Gets the directory where the plug-in saves its TAP streams before processing them and
+     * displaying in the UI.
+     * <p>
+     * Adapted from JUnit Attachments Plug-in.
+     *
+     * @param build Jenkins build
+     * @return virtual directory (FilePath)
+     */
+    public static FilePath getReportsDirectory(Run<?, ?> build) {
+        return new FilePath(new File(build.getRootDir().getAbsolutePath())).child(Constants.TAP_DIR_NAME);
+    }
+
+    /**
      * To prevent serialization issues after fields have been added or removed.
      * e.g. <a href="https://issues.jenkins.io/browse/JENKINS-72558">https://issues.jenkins.io/browse/JENKINS-72558</a>.
      *
@@ -165,22 +178,22 @@ public class TapPublisher extends Recorder implements MatrixAggregatable, Simple
         final Boolean _skipIfBuildNotOk = BooleanUtils.toBooleanDefaultIfNull(this.skipIfBuildNotOk, false);
 
         return new TapPublisher(
-                _testResults,
-                _failIfNoResults,
-                _failedTestsMarkBuildAsFailure,
-                _outputTapToConsole,
-                _enableSubtests,
-                _discardOldReports,
-                _todoIsFailure,
-                _includeCommentDiagnostics,
-                _validateNumberOfTests,
-                _planRequired,
-                _verbose,
-                _showOnlyFailures,
-                _stripSingleParents,
-                _flattenTapResult,
-                _removeYamlIfCorrupted,
-                _skipIfBuildNotOk
+            _testResults,
+            _failIfNoResults,
+            _failedTestsMarkBuildAsFailure,
+            _outputTapToConsole,
+            _enableSubtests,
+            _discardOldReports,
+            _todoIsFailure,
+            _includeCommentDiagnostics,
+            _validateNumberOfTests,
+            _planRequired,
+            _verbose,
+            _showOnlyFailures,
+            _stripSingleParents,
+            _flattenTapResult,
+            _removeYamlIfCorrupted,
+            _skipIfBuildNotOk
         );
     }
 
@@ -269,19 +282,6 @@ public class TapPublisher extends Recorder implements MatrixAggregatable, Simple
         return skipIfBuildNotOk;
     }
 
-    /**
-     * Gets the directory where the plug-in saves its TAP streams before processing them and
-     * displaying in the UI.
-     * <p>
-     * Adapted from JUnit Attachments Plug-in.
-     *
-     * @param build Jenkins build
-     * @return virtual directory (FilePath)
-     */
-    public static FilePath getReportsDirectory(Run<?, ?> build) {
-        return new FilePath(new File(build.getRootDir().getAbsolutePath())).child(Constants.TAP_DIR_NAME);
-    }
-
     /*
      * (non-Javadoc)
      *
@@ -303,11 +303,11 @@ public class TapPublisher extends Recorder implements MatrixAggregatable, Simple
      */
     @Override
     public void perform(
-            @NonNull Run<?, ?> run,
-            @NonNull FilePath workspace,
-            @NonNull Launcher launcher,
-            @NonNull TaskListener listener)
-            throws InterruptedException, IOException {
+        @NonNull Run<?, ?> run,
+        @NonNull FilePath workspace,
+        @NonNull Launcher launcher,
+        @NonNull TaskListener listener)
+        throws InterruptedException, IOException {
 
         performImpl(run, workspace, listener);
     }
@@ -471,7 +471,7 @@ public class TapPublisher extends Recorder implements MatrixAggregatable, Simple
         try {
             results = tapDir.list(antPattern);
             final TapParser parser = new TapParser(getOutputTapToConsole(), getEnableSubtests(), getTodoIsFailure(), getIncludeCommentDiagnostics(),
-                    getValidateNumberOfTests(), getPlanRequired(), getVerbose(), getStripSingleParents(), getFlattenTapResult(), getRemoveYamlIfCorrupted(), logger);
+                getValidateNumberOfTests(), getPlanRequired(), getVerbose(), getStripSingleParents(), getFlattenTapResult(), getRemoveYamlIfCorrupted(), logger);
             final TapResult result = parser.parse(results, owner);
             result.setOwner(owner);
             return result;

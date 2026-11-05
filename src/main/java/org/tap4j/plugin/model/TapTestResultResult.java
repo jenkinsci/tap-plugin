@@ -2,17 +2,17 @@
  * The MIT License
  *
  * Copyright (c) 2012 Bruno P. Kinoshita
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,7 +34,7 @@ import hudson.tasks.test.TestResult;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.tap4j.model.Comment;
 import org.tap4j.model.Directive;
 import org.tap4j.model.TestSet;
@@ -46,31 +46,32 @@ import org.tap4j.util.DirectiveValues;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * 
+ *
  * @since 0.1
  */
 public class TapTestResultResult extends TestResult {
 
     private static final String DURATION_KEY = "duration_ms";
-    
+
     private static final long serialVersionUID = -4499261655602135921L;
     private static final Logger LOGGER = Logger.getLogger(TapTestResultResult.class.getName());
-    
+
     private final transient Run<?, ?> owner;
     private final org.tap4j.model.TestResult tapTestResult;
     private final TestSetMap testSetMap;
     private final Boolean todoIsFailure;
     private final Boolean includeCommentDiagnostics;
     private final Boolean validateNumberOfTests;
-    
+
     public TapTestResultResult(Run<?, ?> owner, TestSetMap testSetMap, org.tap4j.model.TestResult tapTestResult,
-            Boolean todoIsFailure, Boolean includeCommentDiagnostics, Boolean validateNumberOfTests) {
+                               Boolean todoIsFailure, Boolean includeCommentDiagnostics, Boolean validateNumberOfTests) {
         this.owner = owner;
         this.testSetMap = testSetMap;
         this.tapTestResult = tapTestResult;
@@ -78,7 +79,7 @@ public class TapTestResultResult extends TestResult {
         this.includeCommentDiagnostics = includeCommentDiagnostics;
         this.validateNumberOfTests = validateNumberOfTests;
     }
-    
+
     /* (non-Javadoc)
      * @see hudson.model.ModelObject#getDisplayName()
      */
@@ -102,7 +103,7 @@ public class TapTestResultResult extends TestResult {
     public TestObject getParent() {
         TapStreamResult parent = null;
         TestSet testSet = this.tapTestResult.getSubtest();
-        if(testSet != null) {
+        if (testSet != null) {
             TestSetMap subTest = new TestSetMap(testSetMap.getFileName(), testSet);
             List<TestSetMap> list = new ArrayList<>();
             list.add(subTest);
@@ -116,12 +117,12 @@ public class TapTestResultResult extends TestResult {
      */
     @Override
     public TestResult findCorrespondingResult(String id) {
-        if(this.getDisplayName().equals(id)) {
+        if (this.getDisplayName().equals(id)) {
             return this;
         }
         return null;
     }
-    
+
     /* (non-Javadoc)
      * @see hudson.tasks.test.TestObject#getName()
      */
@@ -136,49 +137,49 @@ public class TapTestResultResult extends TestResult {
         }
         return buf.toString();
     }
-    
+
     public String getStatus() {
         boolean failure = Util.isFailure(this.tapTestResult, todoIsFailure);
         return failure ? "NOT OK" : "OK";
     }
-    
+
     public String getSkip() {
         boolean skip = Util.isSkipped(this.tapTestResult);
         return skip ? "Yes" : "No";
     }
-    
+
     public String getTodo() {
         String todo = "No";
         // TODO: not consistent with the other methods in TapResult
         Directive directive = this.tapTestResult.getDirective();
-        if(directive != null) {
-            if(directive.getDirectiveValue() == DirectiveValues.TODO) {
+        if (directive != null) {
+            if (directive.getDirectiveValue() == DirectiveValues.TODO) {
                 todo = "Yes";
             }
         }
         return todo;
     }
-    
+
     public String getFullName() {
         return getName();
     }
-    
+
     public String getRelativePathFrom(TestObject it) {
         // if (it is one of my ancestors) {
         //    return a relative path from it
         // } else {
         //    return a complete path starting with "/"
         // }
-        if (it==this) {
+        if (it == this) {
             return ".";
         }
 
         StringBuilder buf = new StringBuilder();
         TestObject next = this;
-        TestObject cur = this;  
+        TestObject cur = this;
         // Walk up my ancestors from leaf to root, looking for "it"
         // and accumulating a relative url as I go
-        while (next!=null && it!=next) {
+        while (next != null && it != next) {
             cur = next;
             String safeName = cur.getSafeName();
 
@@ -210,11 +211,10 @@ public class TapTestResultResult extends TestResult {
             buf.insert(0, myBuild.getUrl());
 
             // If we're inside a stapler request, just delegate to Hudson.Functions to get the relative path!
-            StaplerRequest req = Stapler.getCurrentRequest();
-            if (req != null && myBuild instanceof Item) {
+            StaplerRequest2 req = Stapler.getCurrentRequest2();
+            if (req != null && myBuild instanceof Item myBuildAsItem) {
                 buf.insert(0, '/');
                 // Ugly but I don't see how else to convince the compiler that myBuild is an Item
-                Item myBuildAsItem = (Item) myBuild;
                 buf.insert(0, Functions.getRelativeLinkTo(myBuildAsItem));
             } else {
                 // We're not in a stapler request. Okay, give up.
@@ -234,32 +234,28 @@ public class TapTestResultResult extends TestResult {
         return buf.toString();
 
     }
-    
+
     /* (non-Javadoc)
      * @see hudson.tasks.test.TestObject#getSafeName()
      */
     @Override
     public String getSafeName() {
         String safeName = testSetMap.getFileName() + "-" + tapTestResult.getTestNumber();
-        try {
-            safeName = URLEncoder.encode(safeName, "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
-            LOGGER.warning(uee.getMessage());
-        }
+        safeName = URLEncoder.encode(safeName, StandardCharsets.UTF_8);
         return safeName;
     }
-    
+
     /* (non-Javadoc)
      * @see hudson.tasks.test.TestResult#getTitle()
      */
     public String getTitle() {
         return getName();
     }
-    
+
     public float getDuration() {
         Map<String, Object> diagnostic = this.tapTestResult.getDiagnostic();
         // FIXME: code duplication. Refactor it and TapResult
-        if (diagnostic != null && ! diagnostic.isEmpty()) {
+        if (diagnostic != null && !diagnostic.isEmpty()) {
             Object duration = diagnostic.get(DURATION_KEY);
             if (duration != null) {
                 float durationMS = Float.parseFloat(duration.toString());
@@ -268,7 +264,7 @@ public class TapTestResultResult extends TestResult {
         }
         return super.getDuration();
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -284,15 +280,15 @@ public class TapTestResultResult extends TestResult {
         }
         if (tapTestResult.getDirective() != null) {
             pw.append(" # ").append(
-                    tapTestResult.getDirective().getDirectiveValue().toString());
+                tapTestResult.getDirective().getDirectiveValue().toString());
             if (StringUtils.isNotBlank(tapTestResult.getDirective().getReason())) {
                 pw.append(' ').append(tapTestResult.getDirective().getReason());
             }
         }
         List<Comment> comments = tapTestResult.getComments();
         if (comments.size() > 0) {
-            for(Comment comment : comments) {
-                if(comment.isInline()) {
+            for (Comment comment : comments) {
+                if (comment.isInline()) {
                     pw.append(' ');
                     pw.append("# ").append(comment.getText());
                 } else {

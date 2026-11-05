@@ -41,14 +41,8 @@ import java.util.Map.Entry;
 @Deprecated
 public class DiagnosticUtil {
 
-    private enum RENDER_TYPE {
-        TEXT, IMAGE
-    }
-
     private static final String INNER_TABLE_HEADER = "<tr>\n<td colspan='4' class='yaml'>\n<table width=\"100%\" class=\"yaml\">";
-
     private static final String INNER_TABLE_FOOTER = "</table>\n</td>\n</tr>";
-
     private static final int MAX_DEPTH = 3;
 
     private DiagnosticUtil() {
@@ -61,13 +55,13 @@ public class DiagnosticUtil {
         return sb.toString();
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private static void createDiagnosticTableRecursively(
-            String tapFile,
-            String parentKey,
-            Map<String, Object> diagnostic,
-            StringBuilder sb,
-            int depth) {
+        String tapFile,
+        String parentKey,
+        Map<String, Object> diagnostic,
+        StringBuilder sb,
+        int depth) {
 
         sb.append(INNER_TABLE_HEADER);
 
@@ -83,19 +77,19 @@ public class DiagnosticUtil {
             sb.append("<td width='5%' class='hidden'> </td>".repeat(Math.max(0, depth)));
             sb.append("<td style=\"width: auto;\">").append(StringEscapeUtils.escapeHtml4(key)).append("</td>");
 
-            if(renderType == RENDER_TYPE.IMAGE && key.equals("File-Content")) {
+            if (renderType == RENDER_TYPE.IMAGE && key.equals("File-Content")) {
                 final Object o = diagnostic.get("File-Name");
                 final String fileName = (o instanceof String) ? (String) o : "attachment";
                 final boolean useParentKey = (parentKey != null && depth > MAX_DEPTH && !parentKeys.contains(parentKey.trim().toLowerCase(Locale.ROOT)));
                 final String downloadKey = useParentKey ? parentKey : fileName;
                 Arrays.asList(
-                        "<td><a href='downloadAttachment?f=",
-                        Functions.htmlAttributeEscape(tapFile),
-                        "&key=",
-                        Functions.htmlAttributeEscape(downloadKey),
-                        "'>",
-                        StringEscapeUtils.escapeHtml4(fileName),
-                        "</a></td>"
+                    "<td><a href='downloadAttachment?f=",
+                    Functions.htmlAttributeEscape(tapFile),
+                    "&key=",
+                    Functions.htmlAttributeEscape(downloadKey),
+                    "'>",
+                    StringEscapeUtils.escapeHtml4(fileName),
+                    "</a></td>"
                 ).forEach(sb::append);
             } else if (renderType == RENDER_TYPE.TEXT && value instanceof java.util.Map) {
                 sb.append("<td> </td>");
@@ -116,6 +110,10 @@ public class DiagnosticUtil {
             }
         }
         return RENDER_TYPE.TEXT;
+    }
+
+    private enum RENDER_TYPE {
+        TEXT, IMAGE
     }
 
 }

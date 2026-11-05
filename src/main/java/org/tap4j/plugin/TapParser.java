@@ -93,6 +93,19 @@ public class TapParser {
         this.logger = logger;
     }
 
+    @NonNull
+    private static TestResult getTestResult(int subtestCountAsPlanned, List<TestResult> subtestResults, TestResult actualTestResult) {
+        final int missingTestCount = subtestCountAsPlanned - subtestResults.size();
+
+        final TestResult timeoutTestResult = new TestResult();
+        timeoutTestResult.setStatus(StatusValues.NOT_OK);
+        timeoutTestResult.setDescription(
+            String.format("%s %s %d %s",
+                actualTestResult.getDescription(), "failed:", missingTestCount, "subtest(s) missing")
+        );
+        return timeoutTestResult;
+    }
+
     public Boolean hasParserErrors() {
         return this.parserErrors;
     }
@@ -142,7 +155,7 @@ public class TapParser {
     }
 
     public Boolean getRemoveYamlIfCorrupted() {
-        return enableSubtests;
+        return removeYamlIfCorrupted;
     }
 
     private boolean containsNotOk(TestSet testSet) {
@@ -218,7 +231,9 @@ public class TapParser {
             return originalSet;
         } else {
             TestSet result = new TestSet();
-            final List<TestResult> resultsToProcess = originalSet.getTestResults();
+            final List<TestResult> resultsToProcess =
+                new LinkedList<>(originalSet.getTestResults());
+
             int testIndex = 1;
             while (!resultsToProcess.isEmpty()) {
                 final TestResult actualTestResult = resultsToProcess.remove(0);
@@ -251,19 +266,6 @@ public class TapParser {
             }
             return result;
         }
-    }
-
-    @NonNull
-    private static TestResult getTestResult(int subtestCountAsPlanned, List<TestResult> subtestResults, TestResult actualTestResult) {
-        final int missingTestCount = subtestCountAsPlanned - subtestResults.size();
-
-        final TestResult timeoutTestResult = new TestResult();
-        timeoutTestResult.setStatus(StatusValues.NOT_OK);
-        timeoutTestResult.setDescription(
-            String.format("%s %s %d %s",
-                actualTestResult.getDescription(), "failed:", missingTestCount, "subtest(s) missing")
-        );
-        return timeoutTestResult;
     }
 
     private boolean hasSingleParent(TestSet testSet) {

@@ -2,17 +2,17 @@
  * The MIT License
  *
  * Copyright (c) 2011 Bruno P. Kinoshita
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,20 +28,21 @@ import hudson.model.Action;
 import hudson.model.Run;
 import org.kohsuke.stapler.StaplerProxy;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
  * TAP Build action with TAP results.
- * 
+ *
  * @since 1.0
  */
 public class TapBuildAction implements Action, Serializable, StaplerProxy {
 
-    private static final long serialVersionUID = 520981690971849654L;
     public static final String URL_NAME = "tapResults";
     public static final String ICON_NAME = "/plugin/tap/icons/tap-24.png";
     public static final String DISPLAY_NAME = "TAP Extended Test Results";
-
+    @Serial
+    private static final long serialVersionUID = 3579421986103474949L;
     private final transient Run<?, ?> build;
 
     private TapResult result;
@@ -54,7 +55,7 @@ public class TapBuildAction implements Action, Serializable, StaplerProxy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.kohsuke.stapler.StaplerProxy#getTarget()
      */
     public Object getTarget() {
@@ -63,7 +64,7 @@ public class TapBuildAction implements Action, Serializable, StaplerProxy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see hudson.model.Action#getDisplayName()
      */
     public String getDisplayName() {
@@ -72,7 +73,7 @@ public class TapBuildAction implements Action, Serializable, StaplerProxy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see hudson.model.Action#getIconFileName()
      */
     public String getIconFileName() {
@@ -81,7 +82,7 @@ public class TapBuildAction implements Action, Serializable, StaplerProxy {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see hudson.model.Action#getUrlName()
      */
     public String getUrlName() {

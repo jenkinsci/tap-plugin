@@ -46,7 +46,7 @@ import java.util.Collections;
  * @since 0.1
  */
 public class TapTestResultAction extends AbstractTestResultAction<TapTestResultAction>
-        implements StaplerProxy, SimpleBuildStep.LastBuildAction, HealthReportingAction, RunAction2 {
+    implements StaplerProxy, SimpleBuildStep.LastBuildAction, HealthReportingAction, RunAction2 {
 
     private TapResult tapResult;
 
@@ -148,8 +148,8 @@ public class TapTestResultAction extends AbstractTestResultAction<TapTestResultA
         final int totalCount = getTotalCount();
         final int failCount = getFailCount();
         int score = (totalCount == 0)
-                ? 100
-                : (int) (100.0 * Math.max(0.0, Math.min(1.0, 1.0 - (scaleFactor * failCount) / totalCount)));
+            ? 100
+            : (int) (100.0 * Math.max(0.0, Math.min(1.0, 1.0 - (scaleFactor * failCount) / totalCount)));
         // TODO: we used to use the hudson.tasks.test.Messages localized entries
         //       here, https://github.com/jenkinsci/junit-plugin/blob/master/src/main/resources/hudson/tasks/test/Messages.properties,
         //       but now `mvn` fails in an injected test.
@@ -158,7 +158,7 @@ public class TapTestResultAction extends AbstractTestResultAction<TapTestResultA
             description = String.format("%s: 0 tests in total", displayName);
         } else {
             description = String.format("%s: %d test(s) failing out of a total of %d test(s).",
-                    displayName, failCount, totalCount);
+                displayName, failCount, totalCount);
         }
         return new HealthReport(score, new NonLocalizable(description));
     }
