@@ -2,17 +2,17 @@
  * The MIT License
  *
  * Copyright (c) 2011 Bruno P. Kinoshita
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,65 +25,82 @@ package org.tap4j.plugin;
 
 import hudson.matrix.MatrixProject;
 import hudson.model.AbstractProject;
+import hudson.model.Action;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.util.ChartUtil;
 import hudson.util.DataSetBuilder;
 import org.jfree.chart.JFreeChart;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.tap4j.plugin.util.GraphHelper;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A TAP Project action, with a graph and a list of builds.
- * 
+ *
  * @since 1.0
  */
-public class TapProjectAction extends AbstractTapProjectAction {
+public class TapProjectAction implements Action {
 
-    protected static class Result {
-        public int numPassed;
-        public int numFailed;
-        public int numSkipped;
-        public int numToDo;
-        
-        public Result() {
-            numPassed = 0;
-            numFailed = 0;
-            numSkipped = 0;
-            numToDo = 0;
-        }
-        
-        public void add(Result r) {
-          numPassed += r.numPassed;
-          numFailed += r.numFailed;
-          numSkipped += r.numSkipped;
-          numToDo += r.numToDo;
-        }
-    }
+    public static final String URL_NAME = "tapResults";
+    public static final String ICON_NAME = "/plugin/tap/icons/tap-24.png";
+
+    public final Job<?, ?> job;
 
     /**
-     * Used to figure out if we need to regenerate the graphs or not. Only used
-     * in newGraphNotNeeded() method. Key is the request URI and value is the
-     * number of builds for the project.
+     * Used to figure out if we need to regenerate the graphs or not.
+     * The key is the request URI and value is the number of builds for the project.
+     * Marked as transient so it is not restored when Jenkins reloads from disk.
      */
-    private transient final Map<String, Integer> requestMap = new HashMap<>();
+    private transient Map<String, Integer> requestMap = new ConcurrentHashMap<>();
 
     public TapProjectAction(AbstractProject<?, ?> project) {
-        super(project);
+        this((Job<?, ?>) project);
     }
 
     public TapProjectAction(Job<?, ?> job) {
-        super(job);
+        this.job = job;
     }
 
-    public AbstractProject<?, ?> getProject() {
-        return this.project;
+    /**
+     * Returns the current request map, or creates a new one if it is missing
+     * (e.g., Jenkins was reloaded from disk).
+     *
+     * @return The request map.
+     */
+    private Map<String, Integer> getRequestMap() {
+        if (requestMap == null) {
+            requestMap = new ConcurrentHashMap<>();
+        }
+        return requestMap;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "TAP Extended Test Results";
+    }
+
+    @Override
+    public String getIconFileName() {
+        return ICON_NAME;
+    }
+
+    @Override
+    public String getUrlName() {
+        return URL_NAME;
+    }
+
+    public String getSearchUrl() {
+        return URL_NAME;
+    }
+
+    public Job<?, ?> getJob() {
+        return job;
     }
 
     protected Class<TapBuildAction> getBuildActionClass() {
@@ -103,56 +120,71 @@ public class TapProjectAction extends AbstractTapProjectAction {
 
     private Run<?, ?> getLastBuildWithTap() {
         Run<?, ?> lastBuild = this.job.getLastBuild();
-        while (lastBuild != null && lastBuild.getAction(TapBuildAction.class) == null) {
+
+        while (lastBuild != null
+            && lastBuild.getAction(TapBuildAction.class) == null) {
             lastBuild = lastBuild.getPreviousBuild();
         }
+
         return lastBuild;
     }
 
-    public void doIndex( final StaplerRequest request,
-            final StaplerResponse response ) throws IOException {
+    public void doIndex(
+        final StaplerRequest2 request,
+        final StaplerResponse2 response) throws IOException {
+
         Run<?, ?> lastBuild = this.getLastBuildWithTap();
+
         if (lastBuild == null) {
             response.sendRedirect2("nodata");
         } else {
             int buildNumber = lastBuild.getNumber();
-            response.sendRedirect2(String.format("../%d/%s", buildNumber,
-                    TapBuildAction.URL_NAME));
+            response.sendRedirect2(String.format(
+                "../%d/%s",
+                buildNumber,
+                TapBuildAction.URL_NAME));
         }
     }
 
     /**
      * Generates the graph that shows test pass/fail ratio.
-     *
-     * @param req Stapler request
-     * @param rsp Stapler response
-     * @throws IOException if it fails to create the graph image and serve it
      */
-    public void doGraph( final StaplerRequest req, StaplerResponse rsp ) throws IOException {
+    public void doGraph(
+        final StaplerRequest2 req,
+        StaplerResponse2 rsp) throws IOException {
+
         if (newGraphNotNeeded(req, rsp)) {
             return;
         }
 
-        final DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel> dataSetBuilder = new DataSetBuilder<>();
+        final DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel>
+            dataSetBuilder = new DataSetBuilder<>();
 
         populateDataSetBuilder(dataSetBuilder);
+
         new hudson.util.Graph(-1, getGraphWidth(), getGraphHeight()) {
+            @Override
             protected JFreeChart createGraph() {
                 return GraphHelper.createChart(req, dataSetBuilder.build());
             }
         }.doPng(req, rsp);
     }
 
-    public void doGraphMap( final StaplerRequest req, StaplerResponse rsp ) throws IOException {
+    public void doGraphMap(
+        final StaplerRequest2 req,
+        StaplerResponse2 rsp) throws IOException {
+
         if (newGraphNotNeeded(req, rsp)) {
             return;
         }
 
-        final DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel> dataSetBuilder = new DataSetBuilder<>();
+        final DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel>
+            dataSetBuilder = new DataSetBuilder<>();
 
-        // TODO: optimize by using cache
         populateDataSetBuilder(dataSetBuilder);
+
         new hudson.util.Graph(-1, getGraphWidth(), getGraphHeight()) {
+            @Override
             protected JFreeChart createGraph() {
                 return GraphHelper.createChart(req, dataSetBuilder.build());
             }
@@ -160,115 +192,115 @@ public class TapProjectAction extends AbstractTapProjectAction {
     }
 
     /**
-     * Returns <code>true</code> if there is a graph to plot.
-     * 
+     * Returns true if there is a graph to plot.
+     *
      * @return value for property 'graphAvailable'
      */
     public boolean isGraphActive() {
         Run<?, ?> build = this.job.getLastBuild();
-        // in order to have a graph, we must have at least two points.
+
+        // A graph requires at least two data points.
         int numPoints = 0;
+
         while (numPoints < 2) {
             if (build == null) {
                 return false;
             }
-            if( this.job instanceof MatrixProject )
-            {
-                MatrixProject mp = (MatrixProject) this.job;
- 
+
+            if (this.job instanceof MatrixProject mp) {
+
                 for (Job<?, ?> j : mp.getAllJobs()) {
-                   if (j != mp) { //getAllJobs includes the parent job too, so skip that
-                       Run<?,?> sub = j.getBuild(build.getId());
-                       if(sub != null) {
-                           // Not all builds are on all subprojects
-                           if (sub.getAction(getBuildActionClass()) != null) {
-                               //data for at least 1 sub-job on this build
-                               numPoints++;
-                               break; // go look at the next build now
-                           }
-                       }
-                   }
+                    if (j != mp) {
+                        Run<?, ?> sub = j.getBuild(build.getId());
+
+                        if (sub != null
+                            && sub.getAction(getBuildActionClass()) != null) {
+                            numPoints++;
+                            break;
+                        }
+                    }
                 }
-            }
-            else
-            {
+            } else {
                 if (build.getAction(getBuildActionClass()) != null) {
                     numPoints++;
                 }
             }
+
             build = build.getPreviousBuild();
         }
+
         return true;
     }
 
     /**
-     * If number of builds hasn't changed and if checkIfModified() returns true,
-     * no need to regenerate the graph. Browser should reuse it's cached image
-     * 
-     * @param req Stapler request
-     * @param rsp Stapler response
-     * @return true, if new image does NOT need to be generated, false otherwise
+     * Checks whether the graph can be served from the browser cache.
      */
-    private boolean newGraphNotNeeded( final StaplerRequest req, StaplerResponse rsp ) {
+    private boolean newGraphNotNeeded(
+        final StaplerRequest2 req,
+        StaplerResponse2 rsp) {
+
+        final Run<?, ?> lastCompletedBuild = job.getLastCompletedBuild();
+
+        if (lastCompletedBuild == null) {
+            return false;
+        }
+
         final Calendar t = this.job.getLastCompletedBuild().getTimestamp();
-        final int prevNumBuilds = requestMap.getOrDefault(req.getRequestURI(), 0);
-        final int numBuilds = (int) this.job.getBuilds().stream().count();
+
+        Map<String, Integer> requests = getRequestMap();
+
+        final int prevNumBuilds = requests.getOrDefault(
+            req.getRequestURI(), 0);
+
+        final int numBuilds = this.job.getBuilds().size();
 
         if (prevNumBuilds != numBuilds) {
-            requestMap.put(req.getRequestURI(), numBuilds);
+            requests.put(req.getRequestURI(), numBuilds);
         }
 
-        if (requestMap.size() > 10) {
-            // keep map size in check
-            requestMap.clear();
+        if (requests.size() > 10) {
+            requests.clear();
         }
 
-        /*
-         * checkIfModified() is after '&&' because we want it evaluated only
-         * if number of builds is different
-         */
         return prevNumBuilds == numBuilds && req.checkIfModified(t, rsp);
     }
 
-    protected void populateDataSetBuilder(DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel> dataset ) {
+    protected void populateDataSetBuilder(
+        DataSetBuilder<String, ChartUtil.NumberOnlyBuildLabel> dataset) {
 
         Job<?, ?> p = this.job;
-        
-        for (Run<?, ?> build = this.job.getLastBuild(); build != null; build = build.getPreviousBuild()) {
+
+        for (Run<?, ?> build = this.job.getLastBuild();
+             build != null;
+             build = build.getPreviousBuild()) {
 
             /*
-             * The build has most likely failed before any TAP data was recorded.
-             *
-             * If we don't exclude such builds, we'd have to account for that in GraphHelper. Besides, that, it's not
-             * consistent with JUnit graph behaviour where builds without test results are not included in graph.
+             * Exclude builds that failed before TAP data was recorded.
              */
             if (build.getAction(TapBuildAction.class) == null) {
                 continue;
             }
 
-            ChartUtil.NumberOnlyBuildLabel label = new ChartUtil.NumberOnlyBuildLabel(build);
+            ChartUtil.NumberOnlyBuildLabel label =
+                new ChartUtil.NumberOnlyBuildLabel(build);
 
             Result r = new Result();
-            
-            if( p instanceof MatrixProject )
-            {
-                MatrixProject mp = (MatrixProject) p;
- 
+
+            if (p instanceof MatrixProject mp) {
+
                 for (Job<?, ?> j : mp.getAllJobs()) {
-                   if (j != mp) { //getAllJobs includes the parent job too, so skip that
-                       Run<?,?> sub = j.getBuild(build.getId());
-                       if(sub != null) {
-                           // Not all builds are on all subprojects
-                           r.add(summarizeBuild(sub));
-                       }
-                   }
+                    if (j != mp) {
+                        Run<?, ?> sub = j.getBuild(build.getId());
+
+                        if (sub != null) {
+                            r.add(summarizeBuild(sub));
+                        }
+                    }
                 }
-            }
-            else
-            {
+            } else {
                 r = summarizeBuild(build);
             }
-            
+
             dataset.add(r.numPassed, "Passed", label);
             dataset.add(r.numFailed, "Failed", label);
             dataset.add(r.numSkipped, "Skipped", label);
@@ -276,11 +308,11 @@ public class TapProjectAction extends AbstractTapProjectAction {
         }
     }
 
-    protected Result summarizeBuild(Run<?,?> b)
-    {
+    protected Result summarizeBuild(Run<?, ?> b) {
         Result r = new Result();
-        
+
         TapBuildAction action = b.getAction(getBuildActionClass());
+
         if (action != null) {
             TapResult report = action.getResult();
             report.tally();
@@ -293,22 +325,37 @@ public class TapProjectAction extends AbstractTapProjectAction {
 
         return r;
     }
-    /**
-     * Getter for property 'graphWidth'.
-     * 
-     * @return Value for property 'graphWidth'.
-     */
+
+    public String getGraphName() {
+        return "TAP Test Results Trend";
+    }
+
     public int getGraphWidth() {
         return 500;
     }
 
-    /**
-     * Getter for property 'graphHeight'.
-     * 
-     * @return Value for property 'graphHeight'.
-     */
     public int getGraphHeight() {
         return 200;
     }
 
+    protected static class Result {
+        public int numPassed;
+        public int numFailed;
+        public int numSkipped;
+        public int numToDo;
+
+        public Result() {
+            numPassed = 0;
+            numFailed = 0;
+            numSkipped = 0;
+            numToDo = 0;
+        }
+
+        public void add(Result r) {
+            numPassed += r.numPassed;
+            numFailed += r.numFailed;
+            numSkipped += r.numSkipped;
+            numToDo += r.numToDo;
+        }
+    }
 }

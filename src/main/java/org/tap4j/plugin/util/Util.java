@@ -2,17 +2,17 @@
  * The MIT License
  *
  * Copyright (c) 2013 Bruno P. Kinoshita
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,18 +33,19 @@ import org.tap4j.util.StatusValues;
  */
 public final class Util {
 
-    private Util() {}
-    
+    private Util() {
+    }
+
     /**
      * Normalises a folder path in relation to the workspace path.
      * <p>
      * A folder that is subdirectory of workspace will return only the difference.
-     * It means that if the workspace is /home/workspace and the folder we want 
+     * It means that if the workspace is /home/workspace and the folder we want
      * to normalise is /home/workspace/job-1/test.txt, then the return will be
      * job-1/test.txt.
-     * 
+     *
      * @param workspace workspace path
-     * @param relative relative path
+     * @param relative  relative path
      * @return normalised path
      */
     public static String normalizeFolders(String workspace, String relative) {
@@ -58,12 +59,12 @@ public final class Util {
         }
         return relative;
     }
-    
+
     public static boolean isSkipped(TestResult testResult) {
         boolean r = false;
         Directive directive = testResult.getDirective();
         if (directive != null
-                && directive.getDirectiveValue() == DirectiveValues.SKIP) {
+            && directive.getDirectiveValue() == DirectiveValues.SKIP) {
             r = true;
         }
         return r;
@@ -73,7 +74,7 @@ public final class Util {
         boolean r = false;
         Directive directive = testResult.getDirective();
         if (directive != null
-                && directive.getDirectiveValue() == DirectiveValues.TODO) {
+            && directive.getDirectiveValue() == DirectiveValues.TODO) {
             r = true;
         }
         return r;
@@ -84,7 +85,7 @@ public final class Util {
         Directive directive = testResult.getDirective();
         StatusValues status = testResult.getStatus();
         if (directive != null) {
-            if(directive.getDirectiveValue() == DirectiveValues.TODO && todoIsFailure != null && todoIsFailure) {
+            if (directive.getDirectiveValue() == DirectiveValues.TODO && todoIsFailure != null && todoIsFailure) {
                 r = true;
             }
         } else if (status == StatusValues.NOT_OK) {
