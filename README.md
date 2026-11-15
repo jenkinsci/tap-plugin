@@ -120,6 +120,58 @@ Note that subtests and YAMLish are not part of the official TAP 13 specification
    and other settings.
 3. Run your build and view the test results.
 
+### Using with Jenkins Pipeline
+
+The TAP plugin supports both Freestyle and Pipeline jobs. For Pipeline
+jobs, use the `publishTap` step to publish TAP test results. The
+following example generates a TAP report and publishes it:
+
+```groovy
+pipeline {
+    agent any
+
+    stages {
+        stage('Run tests') {
+            steps {
+                sh '''
+                    mkdir -p reports
+
+                    cat > reports/results.tap <<'EOF'
+1..3
+ok 1 - Application starts
+ok 2 - Application responds
+not ok 3 - Application shuts down correctly
+EOF
+                '''
+            }
+        }
+
+        stage('Publish TAP results') {
+            steps {
+                publishTap(
+                    testResults: 'reports/**/*.tap',
+                    failIfNoResults: false,
+                    failedTestsMarkBuildAsFailure: false,
+                    outputTapToConsole: true,
+                    enableSubtests: true,
+                    discardOldReports: false,
+                    todoIsFailure: true,
+                    includeCommentDiagnostics: true,
+                    validateNumberOfTests: false,
+                    planRequired: true,
+                    verbose: true,
+                    showOnlyFailures: false,
+                    stripSingleParents: false,
+                    flattenTapResult: false,
+                    removeYamlIfCorrupted: false,
+                    skipIfBuildNotOk: false
+                )
+            }
+        }
+    }
+}
+```
+
 ## Screenshots
 
 #### Jenkins JUnit compatible reports and graphs
