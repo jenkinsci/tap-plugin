@@ -1,6 +1,6 @@
 # TAP plug-in changelog
 
-## Version 2.5.0 (2026/??/??)
+## Version 2.5.0 (2026/11/15)
 
 - [GH-184](https://github.com/jenkinsci/tap-plugin/issues/184): Complete Commons Lang3 migration for diagnostic values and declare the commons-lang3-api plugin dependency #185 (thanks @harsharajdhrd).
 - build(deps): bump org.jenkins-ci.plugins:plugin from 6.2236.v12dd4c483242 to 6.2250.va_d01d559a_209
