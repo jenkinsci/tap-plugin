@@ -7,12 +7,14 @@
 - build(deps): bump org.yaml:snakeyaml from 2.2 to 2.7
 - build(deps-dev): bump org.seleniumhq.selenium:selenium-java from 4.51.0 to 4.52.0
 - [GH-44](https://github.com/jenkinsci/tap-plugin/pull/44): Add @Symbol("publishTap") to TapPublisher Descriptor and pipeline test (thanks @0xShubhamSolanki)
-- [JENKINS-76360](https://issues.jenkins.io/browse/JENKINS-76360) Fix NPE on TAP Test Results screen (thanks @janfaracik)
+- [JENKINS-76360](https://issues.jenkins.io/browse/JENKINS-76360) Fix NPE on TAP Test Results screen #43 (thanks @janfaracik)
+- [JENKINS-65715 (GH #172)](https://github.com/jenkinsci/tap-plugin/issues/172) TAP plugin should extend AbstractTestResultAction, fixed as part of JENKINS-76360, PR #43
 - Migrated oac.lang imports to oac.lang3 to solve Jenkins security scan issues #50
 - Moved issues from JIRA to GitHub https://github.com/jenkins-infra/repository-permissions-updater/pull/5397
 - Organised Java imports
 - Replaced `javax.annotation` imports by `edu.umd.cs.findbugs.annotations`
 - Updated Jenkins version (was `2.426.1` is `2.504.3`) and `pom.xml` #50
+- Added an example to `README.md` using a Groovy pipeline wth the `publishTap` #191
 
 ## Version 2.4.4 (2025/03/13)
 
