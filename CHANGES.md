@@ -2,7 +2,7 @@
 
 ## Version 2.5.1 (2026/??/??)
 
-- 
+- build(deps-dev): bump org.seleniumhq.selenium:selenium-java from 4.52.0 to 4.53.0 - #192
 
 ## Version 2.5.0 (2026/11/15)
 
